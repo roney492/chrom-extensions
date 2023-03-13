@@ -1,22 +1,19 @@
 {
+  "name": "Jobsoid-Int-Sync",
+  "version": "1.0",
   "manifest_version": 3,
-  "name": "My Extension",
-  "version": "1.0.0",
-  "description": "Description of my extension",
   "permissions": [
-    "activeTab"
+    "activeTab",
+    "scripting",
+    "webRequest",
+    "clipboardRead",
+    "clipboardWrite",
+    "tabs"
   ],
-  "background": {
-    "service_worker": "background.js"
-  },
+  "host_permissions": [
+    "https://app.jobsoid.com/*"
+  ],
   "action": {
     "default_popup": "popup.html"
-  },
-  "content_scripts": [
-    {
-      "matches": [
-        "https://app.jobsoid.com/*"
-      ]
-    }
-  ]
+  }
 }
