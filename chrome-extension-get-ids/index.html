@@ -14,26 +14,29 @@
   <body>
 
     <div class="container">
-        <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
+      <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
         <h2>Jobsoiod - Interview sync</h2>
+      </header>
+      <div class="d-flex flex-wrap justify-content-center py-3 mb-4">
         <h4><i>Sit back, relax, let Chrome to do the work for you.</i></h4>
-        </header>
-        <button id="export-btn" class="btn btn-primary my-3">Copy data to clipboard</button>
-        
-
-
-        <select id="select-profile" class="form-select" aria-label="Default select example">
+      </div>
+        <label for="select-profile">Select a profile:</label>
+        <select id="select-profile" class="form-select mb-3" aria-label="Default select example">
           <option selected>Select a profile</option>
         </select>
-
-
-        <select id="select-quiz" class="form-select" aria-label="Default select example">
+        
+        <label for="select-quiz">Select quiz type:</label>
+        <select id="select-quiz" class="form-select mb-3" aria-label="Default select example">
           <option selected>Select quiz type</option>
         </select>
-        <select id="select-quiz-tech" class="form-select" aria-label="Default select example">
+        
+        <label for="select-quiz-tech">Select Tech quiz type:</label>
+        <select id="select-quiz-tech" class="form-select mb-3" aria-label="Default select example">
           <option selected>Select Tech quiz type</option>
         </select>
-        <button id="generate-tests" class="btn btn-primary my-3">Generate Tests</button>
+        
+        <button id="generate-tests" class="btn btn-primary btn-sm my-3">Generate Tests</button>
+        <button id="export-btn" class="btn btn-primary btn-sm my-3">Copy data to clipboard</button>
       </div>
 
     <div>

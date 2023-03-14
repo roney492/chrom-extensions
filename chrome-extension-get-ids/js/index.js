@@ -95,15 +95,15 @@ Promise.all(data.map((element) => fetch('https://app.jobsoid.com/api/candidates/
 
     button.addEventListener("click", () => {
 
-        
       const selectProfileValue = document.getElementById("select-profile").value;
       const selectQuizValue = document.getElementById("select-quiz").value;
       const selectTechQuizValue = document.getElementById("select-quiz-tech").value;
+    
       if (selectQuizValue == "Select quiz type" || selectProfileValue == "Select a profile" || selectTechQuizValue == null) {
         alert("Please select a quiz type, profile, and quiz tech before generating tests.");
         return;
       }
-
+    
       const postData = {
         profile_code: selectProfileValue,
         quiz_type_id: selectQuizValue,
@@ -111,7 +111,7 @@ Promise.all(data.map((element) => fetch('https://app.jobsoid.com/api/candidates/
         type: 'CANDIDATE',
         user_details: candidates
       };
-
+    
       fetch('https://int-mng.cdmx.io/api/admin/tests/mass_generate_ext', {
         method: 'POST',
         headers: {
@@ -119,5 +119,13 @@ Promise.all(data.map((element) => fetch('https://app.jobsoid.com/api/candidates/
         },
         body: JSON.stringify(postData)
       })
-    })
+      .then(response => {
+        if (response.status === 200) {
+          alert("Successfully generated Tests");
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+    });
   });
