@@ -128,25 +128,13 @@ Promise.all(data.map((element) => fetch('https://app.jobsoid.com/api/candidates/
 
               // Loop through each candidate in the response
               data.repeat.forEach(candidate => {
-                const existingRow = tableBody.querySelector(`tr[data-email="${candidate.email}"]`);
-                if (existingRow) {
-                  // Update existing row with generated code
-                  existingRow.querySelector(".generated-code").textContent = candidate.code;
-                  existingRow.querySelector(".status").textContent = "Generated";
-                } else {
-                  // Create a new row with candidate details
-                  const newRow = document.createElement("tr");
-                  newRow.setAttribute("data-email", candidate.email);
-                  newRow.innerHTML = `
-            <td>${tableBody.childElementCount + 1}</td>
-            <td>${candidates.name}</td>
-            <td>${candidate.email}</td>
-            <td>${candidates.phone}</td>
-            <td>${postData.profile_code}</td>
-            <td class="generated-code">${candidate.code}</td>
-            <td class="status">Generated</td>
-          `;
-                  tableBody.appendChild(newRow);
+                const tableRows = tableBody.getElementsByTagName("tr");
+                for (let i = 0; i < tableRows.length; i++) {
+                  const tableEmail = tableRows[i].cells[2].textContent;
+                  if (tableEmail === email) {
+                    tableRows[i].cells[4].textContent = "Generated";
+                    break;
+                  }
                 }
               });
             });
