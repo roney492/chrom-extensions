@@ -97,6 +97,7 @@ Promise.all(data.map((element) => fetch('https://app.jobsoid.com/api/candidates/
 
     const button = document.getElementById("generate-tests");
 
+
     button.addEventListener("click", () => {
 
       const selectProfileValue = document.getElementById("select-profile").value;
@@ -159,4 +160,24 @@ Promise.all(data.map((element) => fetch('https://app.jobsoid.com/api/candidates/
             });
         }, 10000);
     });
+    function refreshTable() {
+      fetch('https://int-mng.cdmx.io/api/admin/tests/get?status=WAITING')
+        .then(response => response.json())
+        .then(data => {
+          data.query.data.forEach(test => {
+            const row = Array.from(document.querySelectorAll('tr'))
+              .find(row => row.cells[2].textContent === test.email);
+            if (row) {
+              const statusCell = row.querySelector('.status');
+              statusCell.textContent = 'Generated';
+            }
+          });
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    }
+    
+    const refreshButton = document.querySelector('#refresh');
+    refreshButton.addEventListener('click', refreshTable);
   });
