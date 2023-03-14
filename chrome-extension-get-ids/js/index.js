@@ -123,12 +123,28 @@ Promise.all(data.map((element) => fetch('https://app.jobsoid.com/api/candidates/
           if (response.status === 200) {
             alert("Successfully generated Tests");
 
-            // check if email exists in response and add Generated column to table
-            const repeatData = response.json().repeat;
-            candidates.forEach(candidate => {
-              const generated = repeatData.some(data => data.email === candidate.email);
-              const row = $("#" + candidate.id);
-              row.append("<td>" + (generated ? "Recieved" : "Not Recieved") + "</td>");
+            response.json().then(data => {
+              const tableBody = document.querySelector('#table tbody');
+              candidates.forEach(candidate => {
+                const row = document.createElement('tr');
+                const generatedCell = document.createElement('td'); // new cell for generated status
+
+                if (data.repeat.some(obj => obj.email === candidate.email)) {
+                  generatedCell.textContent = 'Generated';
+                } else {
+                  generatedCell.textContent = 'Not Generated';
+                }
+
+                row.innerHTML = `
+                      <td>${candidate.id}</td>
+                      <td>${candidate.name}</td>
+                      <td>${candidate.email}</td>
+                      <td>${candidate.mobile}</td>
+                      <td>${candidate.profile}</td>
+                             `;
+                row.appendChild(generatedCell); // add generated cell to row
+                tableBody.appendChild(row);
+              });
             });
           }
         })
