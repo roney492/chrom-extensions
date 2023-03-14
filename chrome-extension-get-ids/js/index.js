@@ -10,6 +10,8 @@ data.forEach(function (element) {
     .append("<td>Fetching...</td>")
     .append("<td>Fetching...</td>")
     .append("<td>Fetching...</td>")
+    .append("<td>Fetching...</td>")
+    .append("<td>Fetching...</td>")
     .append("<td>Fetching...</td>");
 });
 
@@ -28,6 +30,8 @@ Promise.all(data.map((element) => fetch('https://app.jobsoid.com/api/candidates/
     $("#" + element + " td:eq(2)").text(result.Email);
     $("#" + element + " td:eq(3)").text(result.Phone);
     $("#" + element + " td:eq(4)").text(result.Jobs[0].Name);
+    $("#" + element + " td:eq(5)").text("Pending");
+    $("#" + element + " td:eq(6)").text("Pending");
 
     candidates.push({
       email: result.Email,
@@ -146,8 +150,7 @@ Promise.all(data.map((element) => fetch('https://app.jobsoid.com/api/candidates/
                 const row = Array.from(document.querySelectorAll('tr'))
                   .find(row => row.cells[6].textContent === test.code);
                 if (row) {
-                  const statusCell = row.querySelector('.status');
-                  statusCell.textContent = 'Generated';
+                  row.cells[5].textContent = "Generated";
                 }
               });
             })
