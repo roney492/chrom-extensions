@@ -11,8 +11,7 @@ data.forEach(function (element) {
         .append("<td>Fetching...</td>")
         .append("<td>Fetching...</td>")
         .append("<td>Fetching...</td>")
-        .append("<td>Fetching...</td>")
-        .append("<td>Pending...</td>");
+        .append("<td>Fetching...</td>");
 });
 
 
@@ -39,10 +38,19 @@ data.forEach(function (element) {
     })
 });
 
-postToInt.forEach(function (candidate) {
-    //make a post request to interview site over here and update the last column of the table.
 
 
+$("#export-btn").click(function() {
+  // Retrieve the table data and format it as desired
+  var tableData = "";
+  $("#table tbody tr").each(function() {
+    var name = $(this).find("td:eq(1)").text();
+    var email = $(this).find("td:eq(2)").text();
+    var mobile = $(this).find("td:eq(3)").text();
+    tableData += name + "<br>" + email + "<br>" + mobile + "<br><br>";
+  });
+  
+  // Open a new window and write the formatted table data to it
+  var newWindow = window.open();
+  newWindow.document.write(tableData);
 });
-
-
