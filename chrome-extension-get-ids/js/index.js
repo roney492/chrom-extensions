@@ -49,6 +49,8 @@ $("#export-btn").click(function() {
   
 
   navigator.clipboard.writeText(tableData);
+
+  alert("Copied! Now directly paste it in the Interview site");
   // Open a new window and write the formatted table data to it
   //var newWindow = window.open();
   //newWindow.document.write(tableData);
