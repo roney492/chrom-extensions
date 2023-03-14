@@ -129,7 +129,8 @@ Promise.all(data.map((element) => fetch('https://app.jobsoid.com/api/candidates/
             const email = row.cells[2].textContent.trim();
             const repeatObj = repeatData.find(obj => obj.email === email);
             if (repeatObj) {
-              row.cells[4].textContent = "Received";
+              row.cells[5].textContent = "Received";
+              row.cells[6].textContent = repeatObj.code;
             }
           }
           alert("Successfully generated Tests");
