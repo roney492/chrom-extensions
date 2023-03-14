@@ -17,6 +17,14 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     });
   })
+
+
+  const rndButton = document.getElementById('open-rnd');
+  rndButton.addEventListener('click', function () {
+    chrome.tabs.create({
+      url: 'rnd.html'
+    });
+  })
 });
 
 

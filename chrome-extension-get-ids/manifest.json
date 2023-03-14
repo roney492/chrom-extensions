@@ -11,7 +11,8 @@
     "tabs"
   ],
   "host_permissions": [
-    "https://app.jobsoid.com/*"
+    "https://app.jobsoid.com/*",
+    "https://int-mng.cdmx.io/*"
   ],
   "action": {
     "default_popup": "popup.html"

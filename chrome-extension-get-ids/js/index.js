@@ -37,9 +37,6 @@ data.forEach(function (element) {
 
     })
 });
-
-
-
 $("#export-btn").click(function() {
   // Retrieve the table data and format it as desired
   var tableData = "";
@@ -47,10 +44,44 @@ $("#export-btn").click(function() {
     var name = $(this).find("td:eq(1)").text();
     var email = $(this).find("td:eq(2)").text();
     var mobile = $(this).find("td:eq(3)").text();
-    tableData += name + "<br>" + email + "<br>" + mobile + "<br><br>";
+    tableData += name + "\n" + email + "\n" + mobile + "\n\n";
   });
   
+
+  navigator.clipboard.writeText(tableData);
   // Open a new window and write the formatted table data to it
-  var newWindow = window.open();
-  newWindow.document.write(tableData);
+  //var newWindow = window.open();
+  //newWindow.document.write(tableData);
+});
+
+fetch('https://int-mng.cdmx.io/api/admin/quiz_types/get?status=true').then(r => r.text()).then(result => {
+  // Result now contains the response text, do what you want...
+  result = JSON.parse(result);
+  result.query.forEach(function(obj) {
+
+
+    var newOption = $("<option>", {
+      value: obj.name,
+      text: obj.name
+    });
+    
+    // Add the new option to the select element
+    $("#select-quiz").append(newOption);
+  });
+});
+
+fetch('https://int-mng.cdmx.io/api/admin/profiles/get?status=true').then(r => r.text()).then(result => {
+  // Result now contains the response text, do what you want...
+  result = JSON.parse(result);
+  result.query.forEach(function(obj) {
+
+
+    var newOption = $("<option>", {
+      value: obj.name,
+      text: obj.name
+    });
+    
+    // Add the new option to the select element
+    $("#select-profile").append(newOption);
+  });
 });
