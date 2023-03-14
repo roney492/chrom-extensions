@@ -119,27 +119,21 @@ Promise.all(data.map((element) => fetch('https://app.jobsoid.com/api/candidates/
         },
         body: JSON.stringify(postData)
       })
-        .then(response => {
-          if (response.status === 200) {
-            alert("Successfully generated Tests");
-
-            response.json().then(data => {
-              const tableBody = document.querySelector("#table tbody");
-
-              // Loop through each candidate in the response
-              data.repeat.forEach(candidate => {
-                const tableRows = tableBody.getElementsByTagName("tr");
-                for (let i = 0; i < tableRows.length; i++) {
-                  const tableEmail = tableRows[i].cells[2].textContent;
-                  if (tableEmail === email) {
-                    tableRows[i].cells[4].textContent = "Generated";
-                    break;
-                  }
-                }
-              });
-            });
+      .then(response => response.json())
+      .then(data => {
+        const repeatData = data.repeat;
+        const tableBody = document.querySelector("#table tbody");
+        const rows = tableBody.getElementsByTagName("tr");
+        for (let i = 0; i < rows.length; i++) {
+          const row = rows[i];
+          const email = row.cells[2].textContent.trim();
+          const repeatObj = repeatData.find(obj => obj.email === email);
+          if (repeatObj) {
+            row.cells[4].textContent = "Generated";
           }
-        })
+        }
+        alert("Successfully generated Tests");
+      })
         .catch(error => {
           console.error('Error:', error);
         });
