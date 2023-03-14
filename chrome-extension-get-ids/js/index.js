@@ -18,16 +18,22 @@ Promise.all(data.map((element) => fetch('https://app.jobsoid.com/api/candidates/
   .then(result => {
     result = JSON.parse(result);
     var row = $("#" + element);
-    $("#" + element + " td:eq(1)").text(result.FullName);
+
+    // Split the name into first and last name
+    const nameParts = result.FullName.split(' ');
+    const last_name = nameParts.pop();
+    const first_name = nameParts.join(' ');
+
+    $("#" + element + " td:eq(1)").text(first_name+' '+last_name);
     $("#" + element + " td:eq(2)").text(result.Email);
     $("#" + element + " td:eq(3)").text(result.Phone);
     $("#" + element + " td:eq(4)").text(result.Jobs[0].Name);
 
     candidates.push({
-      id: element,
       email: result.Email,
-      phone: result.Phone,
-      name: result.FullName
+      mobile: result.Phone.replace(/\D/g, ''),
+      first_name: first_name,
+      last_name: last_name
     })
   })))
   .then(() => {
@@ -67,8 +73,9 @@ Promise.all(data.map((element) => fetch('https://app.jobsoid.com/api/candidates/
 
         // add "NA" option to select-quiz-tech dropdown
         var newOptionNA = $("<option>", {
-          value: "",
-          text: "NA"
+          value: "NA",
+          text: "NA",
+          selected: true
         });
         $("#select-quiz-tech").prepend(newOptionNA);
       });
