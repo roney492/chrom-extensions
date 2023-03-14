@@ -12,6 +12,8 @@
   ],
   "host_permissions": [
     "https://app.jobsoid.com/*",
+    "http://localhost:8100/*",
+    "https://int-mng.cx-rad.in/*",
     "https://int-mng.cdmx.io/*"
   ],
   "action": {

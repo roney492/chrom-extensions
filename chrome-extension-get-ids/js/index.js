@@ -52,7 +52,7 @@ Promise.all(data.map((element) => fetch('https://app.jobsoid.com/api/candidates/
       alert("Copied! Now directly paste it in the Interview site");
     });
 
-    fetch('https://int-mng.cdmx.io/api/admin/quiz_types/get?status=true')
+    fetch('http://localhost:8100/api/admin/quiz_types/get?status=true')
       .then(r => r.text())
       .then(result => {
         result = JSON.parse(result);
@@ -73,18 +73,18 @@ Promise.all(data.map((element) => fetch('https://app.jobsoid.com/api/candidates/
 
         // add "NA" option to select-quiz-tech dropdown
         var newOptionNA = $("<option>", {
-          value: "NA",
+          value: "",
           text: "NA",
           selected: true
         });
         $("#select-quiz-tech").prepend(newOptionNA);
       });
 
-    fetch('https://int-mng.cdmx.io/api/admin/profiles/get?status=true').then(r => r.text()).then(result => {
+    fetch('http://localhost:8100/api/admin/profiles/get?status=true').then(r => r.text()).then(result => {
       result = JSON.parse(result);
       result.query.forEach(function (obj) {
         var newOption = $("<option>", {
-          value: obj.id,
+          value: obj.code,
           text: obj.name
         });
         $("#select-profile").append(newOption);
@@ -105,13 +105,14 @@ Promise.all(data.map((element) => fetch('https://app.jobsoid.com/api/candidates/
       }
 
       const postData = {
-        profile: selectProfileValue,
-        quizType: selectQuizValue,
-        techQuizType: selectTechQuizValue,
-        candidates: candidates
+        profile_code: selectProfileValue,
+        quiz_type_id: selectQuizValue,
+        tech_quiz_type_id: selectTechQuizValue,
+        type: 'CANDIDATE',
+        user_details: candidates
       };
 
-      fetch('https://int-mng.cdmx.io/api/candidates', {
+      fetch('http://localhost:8100/api/admin/tests/mass_generate_ext', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
