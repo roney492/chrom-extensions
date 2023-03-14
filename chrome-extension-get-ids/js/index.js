@@ -137,23 +137,22 @@ Promise.all(data.map((element) => fetch('https://app.jobsoid.com/api/candidates/
         .catch(error => {
           console.error('Error:', error);
         });
-      setTimeout(() => {
-        fetch('https://int-mng.cdmx.io/api/admin/tests/get?status=WAITING')
-          .then(response => response.json())
-          .then(data => {
-            data.query.data.forEach(test => {
-              const row = document.querySelector(`tr[data-code="${test.code}"]`);
-              if (row) {
-                const statusCell = row.querySelector('.status');
-                if (test.code === row.getAttribute('data-code')) {
+        setTimeout(() => {
+          fetch('https://int-mng.cdmx.io/api/admin/tests/get?status=WAITING')
+            .then(response => response.json())
+            .then(data => {
+              data.query.data.forEach(test => {
+                const row = Array.from(document.querySelectorAll('tr'))
+                  .find(row => row.cells[6].textContent === test.code);
+                if (row) {
+                  const statusCell = row.querySelector('.status');
                   statusCell.textContent = 'Generated';
                 }
-              }
+              });
+            })
+            .catch(error => {
+              console.error('Error:', error);
             });
-          })
-          .catch(error => {
-            console.error('Error:', error);
-          });
-      }, 10000);
+        }, 10000);
     });
   });
