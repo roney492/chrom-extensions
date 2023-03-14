@@ -141,7 +141,7 @@ Promise.all(data.map((element) => fetch('https://app.jobsoid.com/api/candidates/
           alert("Successfully generated Tests");
         })
         .catch(error => {
-          console.error('Error:', error);
+          alert("Something went wrong");
         });
         setTimeout(() => {
           fetch('https://int-mng.cdmx.io/api/admin/tests/get?status=WAITING')
@@ -156,7 +156,7 @@ Promise.all(data.map((element) => fetch('https://app.jobsoid.com/api/candidates/
               });
             })
             .catch(error => {
-              console.error('Error:', error);
+              alert("Something went wrong");
             });
         }, 10000);
     });
@@ -166,15 +166,14 @@ Promise.all(data.map((element) => fetch('https://app.jobsoid.com/api/candidates/
         .then(data => {
           data.query.data.forEach(test => {
             const row = Array.from(document.querySelectorAll('tr'))
-              .find(row => row.cells[2].textContent === test.email);
+            .find(row => row.cells[6].textContent === test.code);
             if (row) {
-              const statusCell = row.querySelector('.status');
-              statusCell.textContent = 'Generated';
+              row.cells[5].textContent = "Generated";
             }
           });
         })
         .catch(error => {
-          console.error('Error:', error);
+          alert("Something went wrong");
         });
     }
     
