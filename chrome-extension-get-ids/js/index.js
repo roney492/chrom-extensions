@@ -119,23 +119,41 @@ Promise.all(data.map((element) => fetch('https://app.jobsoid.com/api/candidates/
         },
         body: JSON.stringify(postData)
       })
-      .then(response => response.json())
-      .then(data => {
-        const repeatData = data.repeat;
-        const tableBody = document.querySelector("#table tbody");
-        const rows = tableBody.getElementsByTagName("tr");
-        for (let i = 0; i < rows.length; i++) {
-          const row = rows[i];
-          const email = row.cells[2].textContent.trim();
-          const repeatObj = repeatData.find(obj => obj.email === email);
-          if (repeatObj) {
-            row.cells[4].textContent = "Generated";
+        .then(response => response.json())
+        .then(data => {
+          const repeatData = data.repeat;
+          const tableBody = document.querySelector("#table tbody");
+          const rows = tableBody.getElementsByTagName("tr");
+          for (let i = 0; i < rows.length; i++) {
+            const row = rows[i];
+            const email = row.cells[2].textContent.trim();
+            const repeatObj = repeatData.find(obj => obj.email === email);
+            if (repeatObj) {
+              row.cells[4].textContent = "Received";
+            }
           }
-        }
-        alert("Successfully generated Tests");
-      })
+          alert("Successfully generated Tests");
+        })
         .catch(error => {
           console.error('Error:', error);
         });
+      setTimeout(() => {
+        fetch('https://int-mng.cdmx.io/api/admin/tests/get?status=WAITING')
+          .then(response => response.json())
+          .then(data => {
+            data.query.data.forEach(test => {
+              const row = document.querySelector(`tr[data-code="${test.code}"]`);
+              if (row) {
+                const statusCell = row.querySelector('.status');
+                if (test.code === row.getAttribute('data-code')) {
+                  statusCell.textContent = 'Generated';
+                }
+              }
+            });
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
+      }, 10000);
     });
   });
