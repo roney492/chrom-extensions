@@ -41,7 +41,6 @@ Promise.all(data.map((element) => fetch('https://app.jobsoid.com/api/candidates/
     })
   })))
   .then(() => {
-    console.log(candidates)
     $("#export-btn").click(function () {
       var tableData = "";
       $("#table tbody tr").each(function () {
@@ -56,7 +55,7 @@ Promise.all(data.map((element) => fetch('https://app.jobsoid.com/api/candidates/
       alert("Copied! Now directly paste it in the Interview site");
     });
 
-    fetch('https://int-mng.cdmx.io/api/admin/quiz_types/get?status=true')
+    fetch('http://localhost:8100/api/admin/quiz_types/get?status=true')
       .then(r => r.text())
       .then(result => {
         result = JSON.parse(result);
@@ -84,7 +83,7 @@ Promise.all(data.map((element) => fetch('https://app.jobsoid.com/api/candidates/
         $("#select-quiz-tech").prepend(newOptionNA);
       });
 
-    fetch('https://int-mng.cdmx.io/api/admin/profiles/get?status=true').then(r => r.text()).then(result => {
+    fetch('http://localhost:8100/api/admin/profiles/get?status=true').then(r => r.text()).then(result => {
       result = JSON.parse(result);
       result.query.forEach(function (obj) {
         var newOption = $("<option>", {
@@ -117,7 +116,7 @@ Promise.all(data.map((element) => fetch('https://app.jobsoid.com/api/candidates/
         user_details: candidates
       };
 
-      fetch('https://int-mng.cdmx.io/api/admin/tests/mass_generate_ext', {
+      fetch('http://localhost:8100/api/admin/tests/mass_generate_ext', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -138,22 +137,36 @@ Promise.all(data.map((element) => fetch('https://app.jobsoid.com/api/candidates/
               row.cells[6].textContent = repeatObj.code;
             }
           }
-          alert("Successfully generated Tests");
+          alert("Successfully generated Tests, Please wait 10s for the Statistics");
         })
         .catch(error => {
           alert("Something went wrong");
         });
         setTimeout(() => {
-          fetch('https://int-mng.cdmx.io/api/admin/tests/get?status=WAITING')
+          fetch('http://localhost:8100/api/admin/tests/get?status=WAITING')
             .then(response => response.json())
             .then(data => {
-              data.query.data.forEach(test => {
-                const row = Array.from(document.querySelectorAll('tr'))
-                  .find(row => row.cells[6].textContent === test.code);
-                if (row) {
+              let total = 0;
+              let generated = 0;
+              let failed = 0;
+              Array.from(document.querySelectorAll('tbody tr')).forEach(row => {
+                const testCode = row.cells[6].textContent;
+                const test = data.query.data.find(test => test.code === testCode);
+                if (test) {
                   row.cells[5].textContent = "Generated";
+                  row.cells[5].classList.add("text-green");
+                  generated++;
+                } else {
+                  row.cells[5].textContent = "Failed";
+                  row.cells[5].classList.add("text-red");
+                  failed++;
                 }
+                total++;
               });
+              // Update the statistics
+              document.getElementById("total").textContent = total;
+              document.getElementById("generated").textContent = generated;
+              document.getElementById("failed").textContent = failed;
             })
             .catch(error => {
               alert("Something went wrong");
@@ -161,7 +174,7 @@ Promise.all(data.map((element) => fetch('https://app.jobsoid.com/api/candidates/
         }, 10000);
     });
     function refreshTable() {
-      fetch('https://int-mng.cdmx.io/api/admin/tests/get?status=WAITING')
+      fetch('http://localhost:8100/api/admin/tests/get?status=WAITING')
         .then(response => response.json())
         .then(data => {
           data.query.data.forEach(test => {
@@ -169,11 +182,23 @@ Promise.all(data.map((element) => fetch('https://app.jobsoid.com/api/candidates/
             .find(row => row.cells[6].textContent === test.code);
             if (row) {
               row.cells[5].textContent = "Generated";
+              row.cells[5].classList.add("text-green");
+              generated++;
             }
+            else {
+              row.cells[5].textContent = "Failed";
+              row.cells[5].classList.add("text-red");
+              failed++;
+            }
+            total++;
           });
+            // update the statistics
+            document.getElementById("total").textContent = total;
+            document.getElementById("generated").textContent = generated;
+            document.getElementById("failed").textContent = failed;
         })
         .catch(error => {
-          alert("Something went wrong");
+          alert(error);
         });
     }
     
