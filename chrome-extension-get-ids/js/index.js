@@ -16,30 +16,30 @@ data.forEach(function (element) {
 });
 
 Promise.all(data.map((element) => fetch('https://app.jobsoid.com/api/candidates/' + element + '/detail')
-  .then(r => r.text())
-  .then(result => {
-    result = JSON.parse(result);
-    var row = $("#" + element);
+    .then(r => r.text())
+    .then(result => {
+      result = JSON.parse(result);
+      var row = $("#" + element);
 
-    // Split the name into first and last name
-    const nameParts = result.FullName.split(' ');
-    const last_name = nameParts.pop();
-    const first_name = nameParts.join(' ');
+      // Split the name into first and last name
+      const nameParts = result.FullName.split(' ');
+      const last_name = nameParts.pop();
+      const first_name = nameParts.join(' ');
 
-    $("#" + element + " td:eq(1)").text(first_name + ' ' + last_name);
-    $("#" + element + " td:eq(2)").text(result.Email);
-    $("#" + element + " td:eq(3)").text(result.Phone);
-    $("#" + element + " td:eq(4)").text(result.Jobs[0].Name);
-    $("#" + element + " td:eq(5)").text("Pending");
-    $("#" + element + " td:eq(6)").text("Pending");
+      $("#" + element + " td:eq(1)").text(first_name + ' ' + last_name);
+      $("#" + element + " td:eq(2)").text(result.Email);
+      $("#" + element + " td:eq(3)").text(result.Phone);
+      $("#" + element + " td:eq(4)").text(result.Jobs[0].Name);
+      $("#" + element + " td:eq(5)").text("Pending");
+      $("#" + element + " td:eq(6)").text("Pending");
 
-    candidates.push({
-      email: result.Email,
-      mobile: result.Phone.replace(/\D/g, ''),
-      first_name: first_name,
-      last_name: last_name
-    })
-  })))
+      candidates.push({
+        email: result.Email,
+        mobile: result.Phone.replace(/\D/g, ''),
+        first_name: first_name,
+        last_name: last_name
+      })
+    })))
   .then(() => {
     $("#export-btn").click(function () {
       var tableData = "";
@@ -117,12 +117,12 @@ Promise.all(data.map((element) => fetch('https://app.jobsoid.com/api/candidates/
       };
 
       fetch('https://int-mng.cdmx.io/api/admin/tests/mass_generate_ext', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(postData)
-      })
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(postData)
+        })
         .then(response => response.json())
         .then(data => {
           const repeatData = data.repeat;
@@ -142,66 +142,69 @@ Promise.all(data.map((element) => fetch('https://app.jobsoid.com/api/candidates/
         .catch(error => {
           alert("Something went wrong");
         });
-        setTimeout(() => {
-          fetch('https://int-mng.cdmx.io/api/admin/tests/get?status=WAITING')
-            .then(response => response.json())
-            .then(data => {
-              let total = 0;
-              let generated = 0;
-              let failed = 0;
-              Array.from(document.querySelectorAll('tbody tr')).forEach(row => {
-                const testCode = row.cells[6].textContent;
-                const test = data.query.data.find(test => test.code === testCode);
-                if (test) {
-                  row.cells[5].textContent = "Generated";
-                  row.cells[5].classList.add("text-green");
-                  generated++;
-                } else {
-                  row.cells[5].textContent = "Failed";
-                  row.cells[5].classList.add("text-red");
-                  failed++;
-                }
-                total++;
-              });
-              // Update the statistics
-              document.getElementById("total").textContent = total;
-              document.getElementById("generated").textContent = generated;
-              document.getElementById("failed").textContent = failed;
-            })
-            .catch(error => {
-              alert("Something went wrong");
+      setTimeout(() => {
+        fetch('https://int-mng.cdmx.io/api/admin/tests/get?status=WAITING')
+          .then(response => response.json())
+          .then(data => {
+            let total = 0;
+            let generated = 0;
+            let failed = 0;
+            Array.from(document.querySelectorAll('tbody tr')).forEach(row => {
+              const testCode = row.cells[6].textContent;
+              const test = data.query.data.find(test => test.code === testCode);
+              if (test) {
+                row.cells[5].textContent = "Generated";
+                row.cells[5].classList.add("text-green");
+                generated++;
+              } else {
+                row.cells[5].textContent = "Failed";
+                row.cells[5].classList.add("text-red");
+                failed++;
+              }
+              total++;
             });
-        }, 10000);
+            // Update the statistics
+            document.getElementById("total").textContent = total;
+            document.getElementById("generated").textContent = generated;
+            document.getElementById("failed").textContent = failed;
+          })
+          .catch(error => {
+            alert("Something went wrong");
+          });
+      }, 10000);
     });
+
     function refreshTable() {
       fetch('https://int-mng.cdmx.io/api/admin/tests/get?status=WAITING')
         .then(response => response.json())
         .then(data => {
-          data.query.data.forEach(test => {
-            const row = Array.from(document.querySelectorAll('tr'))
-            .find(row => row.cells[6].textContent === test.code);
-            if (row) {
+          let total = 0;
+          let generated = 0;
+          let failed = 0;
+          Array.from(document.querySelectorAll('tbody tr')).forEach(row => {
+            const testCode = row.cells[6].textContent;
+            const test = data.query.data.find(test => test.code === testCode);
+            if (test) {
               row.cells[5].textContent = "Generated";
               row.cells[5].classList.add("text-green");
               generated++;
-            }
-            else {
+            } else {
               row.cells[5].textContent = "Failed";
               row.cells[5].classList.add("text-red");
               failed++;
             }
             total++;
           });
-            // update the statistics
-            document.getElementById("total").textContent = total;
-            document.getElementById("generated").textContent = generated;
-            document.getElementById("failed").textContent = failed;
+          // Update the statistics
+          document.getElementById("total").textContent = total;
+          document.getElementById("generated").textContent = generated;
+          document.getElementById("failed").textContent = failed;
         })
         .catch(error => {
-          alert(error);
+          alert("Something went wrong");
         });
     }
-    
+
     const refreshButton = document.querySelector('#refresh');
     refreshButton.addEventListener('click', refreshTable);
   });
