@@ -55,7 +55,7 @@ Promise.all(data.map((element) => fetch('https://app.jobsoid.com/api/candidates/
       alert("Copied! Now directly paste it in the Interview site");
     });
 
-    fetch('http://localhost:8100/api/admin/quiz_types/get?status=true')
+    fetch('https://int-mng.cdmx.io/api/admin/quiz_types/get?status=true')
       .then(r => r.text())
       .then(result => {
         result = JSON.parse(result);
@@ -83,7 +83,7 @@ Promise.all(data.map((element) => fetch('https://app.jobsoid.com/api/candidates/
         $("#select-quiz-tech").prepend(newOptionNA);
       });
 
-    fetch('http://localhost:8100/api/admin/profiles/get?status=true').then(r => r.text()).then(result => {
+    fetch('https://int-mng.cdmx.io/api/admin/profiles/get?status=true').then(r => r.text()).then(result => {
       result = JSON.parse(result);
       result.query.forEach(function (obj) {
         var newOption = $("<option>", {
@@ -116,7 +116,7 @@ Promise.all(data.map((element) => fetch('https://app.jobsoid.com/api/candidates/
         user_details: candidates
       };
 
-      fetch('http://localhost:8100/api/admin/tests/mass_generate_ext', {
+      fetch('https://int-mng.cdmx.io/api/admin/tests/mass_generate_ext', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -143,7 +143,7 @@ Promise.all(data.map((element) => fetch('https://app.jobsoid.com/api/candidates/
           alert("Something went wrong");
         });
         setTimeout(() => {
-          fetch('http://localhost:8100/api/admin/tests/get?status=WAITING')
+          fetch('https://int-mng.cdmx.io/api/admin/tests/get?status=WAITING')
             .then(response => response.json())
             .then(data => {
               let total = 0;
@@ -174,7 +174,7 @@ Promise.all(data.map((element) => fetch('https://app.jobsoid.com/api/candidates/
         }, 10000);
     });
     function refreshTable() {
-      fetch('http://localhost:8100/api/admin/tests/get?status=WAITING')
+      fetch('https://int-mng.cdmx.io/api/admin/tests/get?status=WAITING')
         .then(response => response.json())
         .then(data => {
           data.query.data.forEach(test => {
