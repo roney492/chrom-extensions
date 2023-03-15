@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function injectedFunction() {
   var dataItems = [];
-  document.querySelectorAll('input[type="checkbox"]:checked').forEach(function (checkbox) {
+  document.querySelectorAll('input[type="checkbox"]:checked:not(#selectAll)').forEach(function (checkbox) {
     var element = checkbox.closest('[data-uid]').querySelector('a[href*="/Candidates/"]');
     dataItems.push(element.getAttribute('href').split('/').slice(-2)[0]);
   });
