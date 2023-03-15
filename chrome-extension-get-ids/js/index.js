@@ -55,7 +55,7 @@ Promise.all(data.map((element) => fetch('https://app.jobsoid.com/api/candidates/
       alert("Copied! Now directly paste it in the Interview site");
     });
 
-    fetch('https://int-mng.cdmx.io/api/admin/quiz_types/get?status=true')
+    fetch('http://localhost:8100/api/admin/quiz_types/get?status=true')
       .then(r => r.text())
       .then(result => {
         result = JSON.parse(result);
@@ -83,7 +83,7 @@ Promise.all(data.map((element) => fetch('https://app.jobsoid.com/api/candidates/
         $("#select-quiz-tech").prepend(newOptionNA);
       });
 
-    fetch('https://int-mng.cdmx.io/api/admin/profiles/get?status=true').then(r => r.text()).then(result => {
+    fetch('http://localhost:8100/api/admin/profiles/get?status=true').then(r => r.text()).then(result => {
       result = JSON.parse(result);
       result.query.forEach(function (obj) {
         var newOption = $("<option>", {
@@ -98,7 +98,7 @@ Promise.all(data.map((element) => fetch('https://app.jobsoid.com/api/candidates/
 
 
     button.addEventListener("click", () => {
-
+      button.disabled = true;
       const selectProfileValue = document.getElementById("select-profile").value;
       const selectQuizValue = document.getElementById("select-quiz").value;
       const selectTechQuizValue = document.getElementById("select-quiz-tech").value;
@@ -116,7 +116,7 @@ Promise.all(data.map((element) => fetch('https://app.jobsoid.com/api/candidates/
         user_details: candidates
       };
 
-      fetch('https://int-mng.cdmx.io/api/admin/tests/mass_generate_ext', {
+      fetch('http://localhost:8100/api/admin/tests/mass_generate_ext', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -143,7 +143,7 @@ Promise.all(data.map((element) => fetch('https://app.jobsoid.com/api/candidates/
           alert("Something went wrong");
         });
       setTimeout(() => {
-        fetch('https://int-mng.cdmx.io/api/admin/tests/get?status=WAITING')
+        fetch('http://localhost:8100/api/admin/tests/get?status=WAITING')
           .then(response => response.json())
           .then(data => {
             let total = 0;
@@ -175,7 +175,7 @@ Promise.all(data.map((element) => fetch('https://app.jobsoid.com/api/candidates/
     });
 
     function refreshTable() {
-      fetch('https://int-mng.cdmx.io/api/admin/tests/get?status=WAITING')
+      fetch('http://localhost:8100/api/admin/tests/get?status=WAITING')
         .then(response => response.json())
         .then(data => {
           let total = 0;
