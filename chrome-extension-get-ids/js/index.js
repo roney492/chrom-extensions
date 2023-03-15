@@ -143,7 +143,7 @@ Promise.all(data.map((element) => fetch('https://app.jobsoid.com/api/candidates/
           alert("Something went wrong");
         });
       setTimeout(() => {
-        fetch('https://int-mng.cdmx.io/api/admin/tests/get?status=WAITING')
+        fetch('https://int-mng.cdmx.io/api/admin/tests/get?status=WAITING&limit=0')
           .then(response => response.json())
           .then(data => {
             let total = 0;
@@ -175,7 +175,7 @@ Promise.all(data.map((element) => fetch('https://app.jobsoid.com/api/candidates/
     });
 
     function refreshTable() {
-      fetch('https://int-mng.cdmx.io/api/admin/tests/get?status=WAITING')
+      fetch('https://int-mng.cdmx.io/api/admin/tests/get?status=WAITING&limit=0')
         .then(response => response.json())
         .then(data => {
           let total = 0;
