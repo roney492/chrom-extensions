@@ -31,7 +31,7 @@ data.map((element, index) => {
           $("#" + element + " td:eq(2)").text(result.Email);
           $("#" + element + " td:eq(3)").text(result.Phone);
           $("#" + element + " td:eq(4)").text(result.Jobs[0].Name);
-          $("#" + element + " td:eq(5)").text("Waiting");
+          $("#" + element + " td:eq(5)").text("Ready");
           $("#" + element + " td:eq(6)").text("Waiting");
 
           candidates.push({
