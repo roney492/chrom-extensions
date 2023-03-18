@@ -61,11 +61,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function injectedFunction() {
   var dataItems = [];
-  document.querySelectorAll('input[type="checkbox"]:checked:not(#selectAll)').forEach(function (checkbox) {
-    var element = checkbox.closest('[data-uid]').querySelector('a[href*="/Candidates/"]');
-    dataItems.push(element.getAttribute('href').split('/').slice(-2)[0]);
-  });
+
+  const checkboxes = document.querySelectorAll('.list-group-item.item-checkbox.list-group-main input[type="checkbox"]');
+  for (let i = 0; i < checkboxes.length; i++) {    
+      const anchor = checkboxes[i].parentNode.querySelector('a.title');
+      if (checkboxes[i].checked) {
+        dataItems.push(anchor.getAttribute('href').split('/').slice(-2)[0]);
+      }
+  }
   return dataItems;
+  
 }
 
 
