@@ -81,7 +81,7 @@ function injectedJavascriptScore() {
     let link = elements[i].querySelector(s + " div:nth-child(" + (i + 1) + ") > div > div.col-sm-17.col-xs-17 > div.entity > a");
     let span = elements[i].querySelector(s + " div:nth-child(" + (i + 1) + ") > div > div.col-sm-2.text-right.hidden-xs > div > div.tooltip > div > div:nth-child(2) > span");
     let spanDuplicate = span.cloneNode(true);
-    spanDuplicate.style.cssText = "font-size: 18px !important; background-color: " + (span.textContent === "0" ? "red" : span.textContent <= 200 ? "#FFCCCB" : span.textContent < 300 ? "#FFD580" : span.textContent < 400 ? "lightyellow" : span.textContent < 500 ? "lightgreen" : "lightblue") + "; border: 1px solid grey; border-radius: 3px; padding-left: 2px; padding-right: 2px; margin-left: 4px;";
+    spanDuplicate.style.cssText = "font-size: 18px !important; background-color: " + (span.textContent === "0" ? "red" : span.textContent <= 100 ? "#FFCCCB" : span.textContent <= 150 ? "#FFD580" : span.textContent <= 200 ? "lightyellow" : span.textContent <= 250 ? "lightgreen" : "lightblue") + "; border: 1px solid grey; border-radius: 3px; padding-left: 2px; padding-right: 2px; margin-left: 4px;";
     link.appendChild(spanDuplicate);
   }
   return true;
