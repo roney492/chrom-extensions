@@ -11,7 +11,6 @@ data.forEach(function (element) {
     .append("<td>Fetching...</td>")
     .append("<td>Fetching...</td>")
     .append("<td>Fetching...</td>")
-    .append("<td>Fetching...</td>")
     .append("<td>Fetching...</td>");
 });
 
@@ -37,7 +36,6 @@ data.map((element, index) => {
           $("#" + element + " td:eq(3)").text("Waiting");
           $("#" + element + " td:eq(4)").text(result.Email);
           $("#" + element + " td:eq(5)").text(phone);
-          $("#" + element + " td:eq(6)").text(result.Jobs[0].Name);
 
           candidates.push({
             email: result.Email,
