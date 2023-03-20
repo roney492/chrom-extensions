@@ -50,6 +50,46 @@ document.addEventListener("DOMContentLoaded", function () {
 
   })
 
+  const selectGood = document.getElementById('select-good');
+  selectGood.addEventListener('click', function () {
+
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      if (tabs[0].url.startsWith("https://app.jobsoid.com/App/#/Jobs/")) {
+
+        chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
+          chrome.scripting.executeScript({
+            target: { tabId: tabs[0].id },
+            function: selectCandidatesWithScoreAbove200
+          });
+        });
+
+      } else {
+        alert("You need to be on the Jobs -> Candidates page.");
+      }
+    });
+  })
+  
+
+  const selectBad = document.getElementById('select-bad');
+  selectBad.addEventListener('click', function () {
+
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      if (tabs[0].url.startsWith("https://app.jobsoid.com/App/#/Jobs/")) {
+
+        chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
+          chrome.scripting.executeScript({
+            target: { tabId: tabs[0].id },
+            function: selectCandidatesWithScoreBelow100
+          });
+        });
+
+      } else {
+        alert("You need to be on the Jobs -> Candidates page.");
+      }
+    });
+  })
+
+
   const rndButton = document.getElementById('open-rnd');
   rndButton.addEventListener('click', function () {
     chrome.tabs.create({
@@ -80,9 +120,59 @@ function injectedJavascriptScore() {
   for (let i = 0; i < elements.length; i++) {
     let link = elements[i].querySelector(s + " div:nth-child(" + (i + 1) + ") > div > div.col-sm-17.col-xs-17 > div.entity > a");
     let span = elements[i].querySelector(s + " div:nth-child(" + (i + 1) + ") > div > div.col-sm-2.text-right.hidden-xs > div > div.tooltip > div > div:nth-child(2) > span");
-    let spanDuplicate = span.cloneNode(true);
-    spanDuplicate.style.cssText = "font-size: 18px !important; background-color: " + (span.textContent === "0" ? "red" : span.textContent <= 100 ? "#FFCCCB" : span.textContent <= 150 ? "#FFD580" : span.textContent <= 200 ? "lightyellow" : span.textContent <= 250 ? "lightgreen" : "lightblue") + "; border: 1px solid grey; border-radius: 3px; padding-left: 2px; padding-right: 2px; margin-left: 4px;";
-    link.appendChild(spanDuplicate);
+    // Create a new span element
+    let newSpan = document.createElement('span');
+    // Set the background color and text content of the new span element based on the value of the existing span element
+    newSpan.textContent = span.textContent;
+    newSpan.style.cssText = "font-size: 18px !important; background-color: " + (span.textContent === "0" ? "red" : span.textContent <= 100 ? "#FFCCCB" : span.textContent <= 150 ? "#FFD580" : span.textContent <= 200 ? "lightyellow" : span.textContent <= 250 ? "lightgreen" : "lightblue") + "; border: 1px solid grey; border-radius: 3px; padding-left: 2px; padding-right: 2px; margin-left: 4px;";
+    newSpan.classList.add('assist-score');
+
+    // Add the new span element to the link element
+    link.appendChild(newSpan);
+
   }
   return true;
+}
+
+function selectCandidatesWithScoreAbove200() {
+  // Get all the list items with the class 'item-checkbox'
+  let items = document.querySelectorAll('.item-checkbox');
+
+  // Loop through each list item
+  for (let i = 0; i < items.length; i++) {
+    // Get the 'assist-score' element within the list item
+    let score = items[i].querySelector('.assist-score');
+    
+    // Check if the score value is greater than 200
+    if (score && parseInt(score.textContent) > 200) {
+      // Get the checkbox element within the list item
+      let checkbox = items[i].querySelector('input[type="checkbox"]');
+      
+      // Set the checkbox value to true to select it
+      checkbox.checked = true;
+    }
+  }
+
+  return;
+}
+
+
+function selectCandidatesWithScoreBelow100() {
+  // Get all the list items with the class 'item-checkbox'
+  let items = document.querySelectorAll('.item-checkbox');
+
+  // Loop through each list item
+  for (let i = 0; i < items.length; i++) {
+    // Get the 'assist-score' element within the list item
+    let score = items[i].querySelector('.assist-score');
+    
+    // Check if the score value is <= 100
+    if (score && parseInt(score.textContent) <= 100) {
+      // Get the checkbox element within the list item
+      let checkbox = items[i].querySelector('input[type="checkbox"]');
+      
+      // Set the checkbox value to true to select it
+      checkbox.checked = true;
+    }
+  }
 }

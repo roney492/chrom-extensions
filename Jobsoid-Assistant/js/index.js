@@ -91,7 +91,7 @@ button.addEventListener("click", () => {
 
   const postData = {
     profile_code: selectProfileValue,
-    quiz_type_id: selectQuizValue,
+    quiz_type_id: "1", //We only generate Logic Test from Jobsoid.
     tech_quiz_type_id: selectTechQuizValue,
     type: 'CANDIDATE',
     user_details: candidates
@@ -212,12 +212,7 @@ $(document).ready(function () {
     .then(result => {
       result = JSON.parse(result);
       result.query.forEach(function (obj) {
-        var newOption = $("<option>", {
-          value: obj.id,
-          text: obj.name
-        });
-        $("#select-quiz").append(newOption);
-
+        //We only select logic for Quiz Type, so value is hardcoded to 1
         // add options to select-quiz-tech dropdown
         var newOptionTech = $("<option>", {
           value: obj.id,
