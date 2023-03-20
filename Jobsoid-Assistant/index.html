@@ -23,12 +23,12 @@
 </style>
 
 <body>
-  <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
-    <h2>Jobsoid Assistant</h2>
+  <header class="d-flex flex-column flex-wrap justify-content-center align-items-center py-3 mb-4 border-bottom">
+    <h2>Jobsoid Assistant <span id="InterviewSiteStatus" class="badge bg-warning">Checking</span></h2></h2>
+    <h6><i>Sit back, relax, let me do the work for you.</i></h6>
   </header>
-  <div class="d-flex flex-wrap justify-content-center py-3 mb-4">
-    <h4><i>Sit back, relax, let me to do the work for you.</i></h4>
-  </div>
+
+
   <div class="container-fluid">
     <div class="row">
       <div class="col-sm-12 col-md-6 col-lg-4">
@@ -66,7 +66,7 @@
 
     <div class="row">
       <div class="col-sm-12 col-md-12 col-lg-12">
-        <button id="generate-tests" class="btn btn-primary my-3 mx-2">Generate Tests</button>
+        <button id="generate-tests" class="btn btn-primary my-3 mx-2" disabled>Waiting...</button>
         <button id="export-btn" class="btn btn-success my-3 mx-2">Copy Data to Clipboard</button>
         <button id="refresh" class="btn btn-secondary my-3 mx-2">Refresh</button>
       </div>
@@ -80,11 +80,11 @@
             <tr>
               <th>Id</th>
               <th>Name</th>
+              <th>Status</th>
+              <th>Int. Code</th>
               <th>Email</th>
               <th>Mobile</th>
               <th>Profile</th>
-              <th>Status</th>
-              <th>Code</th>
             </tr>
           </thead>
           <tbody>
@@ -106,7 +106,7 @@
   </footer>
 
   <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-  <script src="js/jquery-3.3.1.slim.min.js"></script>
+  <script src="js/jquery-3.6.4.min.js"></script>
   <script src="js/popper.min.js"></script>
   <script src="js/bootstrap.min.js"></script>
   <script src="js/index.js" type="module"></script>

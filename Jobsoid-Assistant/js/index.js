@@ -6,7 +6,7 @@ var candidates = [];
 
 data.forEach(function (element) {
   $("<tr id='" + element + "'></tr>").appendTo("#table tbody")
-    .append("<td>" + element + "</td>")
+    .append("<td><a href='https://app.jobsoid.com/App/#/Candidates/"+element+"/' target='_blank'>" + element + "<a/></td>")
     .append("<td>Fetching...</td>")
     .append("<td>Fetching...</td>")
     .append("<td>Fetching...</td>")
@@ -15,8 +15,12 @@ data.forEach(function (element) {
     .append("<td>Fetching...</td>");
 });
 
+// Create an array to store all the promises
+let promises = [];
+
+// Loop through the data array and create a promise for each element
 data.map((element, index) => {
-  return new Promise((resolve) => {
+  let promise = new Promise((resolve) => {
     setTimeout(() => {
       fetch('https://app.jobsoid.com/api/candidates/' + element + '/detail')
         .then(r => r.text())
@@ -27,12 +31,12 @@ data.map((element, index) => {
           const last_name = nameParts.pop();
           const first_name = nameParts.join(' ');
 
-          $("#" + element + " td:eq(1)").text(first_name + ' ' + last_name);
-          $("#" + element + " td:eq(2)").text(result.Email);
-          $("#" + element + " td:eq(3)").text(result.Phone);
-          $("#" + element + " td:eq(4)").text(result.Jobs[0].Name);
-          $("#" + element + " td:eq(5)").text("Ready");
-          $("#" + element + " td:eq(6)").text("Waiting");
+          $("#" + element + " td:eq(1)").text(first_name + ' ' + last_name);          
+          $("#" + element + " td:eq(2)").text("Ready");
+          $("#" + element + " td:eq(3)").text("Waiting");
+          $("#" + element + " td:eq(4)").text(result.Email);
+          $("#" + element + " td:eq(5)").text(result.Phone);
+          $("#" + element + " td:eq(6)").text(result.Jobs[0].Name);
 
           candidates.push({
             email: result.Email,
@@ -43,9 +47,19 @@ data.map((element, index) => {
 
           resolve();
         });
-    }, index * 1000);
+    }, index * 500);
   });
+  
+  // Add the promise to the promises array
+  promises.push(promise);
 });
+
+// Wait for all the promises to complete using Promise.all()
+Promise.all(promises).then(() => {
+  $("#generate-tests").html('Generate and send tests').prop('disabled', false);
+
+});
+
 
 
 $("#export-btn").click(function () {
@@ -227,4 +241,36 @@ $(document).ready(function () {
       $("#select-profile").append(newOption);
     });
   });
+
+  // Call the function every 5 minutes using setInterval()
+  checkInterviewSiteStatus();
+  setInterval(checkInterviewSiteStatus, 5 * 60 * 1000); // 5 minutes in milliseconds
 });
+
+
+function checkInterviewSiteStatus() {
+  fetch('https://int-mng.cdmx.io/admin', {
+    method: 'GET',
+    redirect: 'manual', // prevent the browser from following redirects
+    cache: 'no-cache' // disable caching to ensure a fresh response is received
+  })
+  .then(response => {
+    if (response.ok) {
+      // The request was successful and returned a status code of 200
+      $('#InterviewSiteStatus')
+        .removeClass('bg-warning bg-danger')
+        .addClass('bg-success')
+        .text('ONLINE');
+    } else {
+      // The request failed or returned a non-200 status code
+      $('#InterviewSiteStatus')
+        .removeClass('bg-warning bg-success')
+        .addClass('bg-danger')
+        .text('OFFLINE');
+    }
+  })
+  .catch(error => {
+    console.error(error);
+  });
+}
+
