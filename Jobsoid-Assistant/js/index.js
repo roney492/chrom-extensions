@@ -249,7 +249,7 @@ $(document).ready(function () {
 
   // Call the function every 5 minutes using setInterval()
   checkInterviewSiteStatus();
-  setInterval(checkInterviewSiteStatus, 5 * 60 * 1000); // 5 minutes in milliseconds
+  setInterval(checkInterviewSiteStatus, 2 * 60 * 1000); // 5 minutes in milliseconds
 });
 
 
