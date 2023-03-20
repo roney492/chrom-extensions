@@ -165,6 +165,11 @@ const refreshButton = document.querySelector('#refresh');
 refreshButton.addEventListener('click', refreshTable);
 
 function refreshTable() {
+  if(document.getElementById("select-profile").value == "Select a profile")
+  {
+    alert("Select Profile first");
+    return false;
+  }
   fetch('https://int-mng.cdmx.io/api/admin/tests/get?status=WAITING&limit=0')
     .then(response => response.json())
     .then(data => {
@@ -172,14 +177,19 @@ function refreshTable() {
       let generated = 0;
       let failed = 0;
       Array.from(document.querySelectorAll('tbody tr')).forEach(row => {
-        const testCode = row.cells[3].textContent;
-        const test = data.query.data.find(test => test.code === testCode);
+        const email = row.cells[4].textContent;
+        const profileCode = document.getElementById("select-profile").value;
+        const test = data.query.data.find(test => test.email === email && test.profile_code === profileCode);
+
         if (test) {
           row.cells[2].textContent = "Generated";
+          row.cells[2].classList.remove("text-red");
           row.cells[2].classList.add("text-green");
+          row.cells[3].textContent = test.code;
           generated++;
         } else {
           row.cells[2].textContent = "Failed";
+          row.cells[2].classList.remove("text-green");
           row.cells[2].classList.add("text-red");
           failed++;
         }
