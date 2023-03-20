@@ -67,8 +67,8 @@ $("#export-btn").click(function () {
   var tableData = "";
   $("#table tbody tr").each(function () {
     var name = $(this).find("td:eq(1)").text();
-    var email = $(this).find("td:eq(2)").text();
-    var mobile = $(this).find("td:eq(3)").text();
+    var email = $(this).find("td:eq(4)").text();
+    var mobile = $(this).find("td:eq(5)").text();
     tableData += name + "\n" + email + "\n" + mobile + "\n\n";
   });
 
@@ -82,10 +82,9 @@ const button = document.getElementById("generate-tests");
 button.addEventListener("click", () => {
   button.disabled = true;
   const selectProfileValue = document.getElementById("select-profile").value;
-  const selectQuizValue = document.getElementById("select-quiz").value;
   const selectTechQuizValue = document.getElementById("select-quiz-tech").value;
 
-  if (selectQuizValue == "Select quiz type" || selectProfileValue == "Select a profile" || selectTechQuizValue == null) {
+  if (selectProfileValue == "Select a profile" || selectTechQuizValue == null) {
     alert("Please select a quiz type, profile, and quiz tech before generating tests.");
     return;
   }
@@ -120,8 +119,8 @@ button.addEventListener("click", () => {
         const email = row.cells[2].textContent.trim();
         const repeatObj = repeatData.find(obj => obj.email === email);
         if (repeatObj) {
-          row.cells[5].textContent = "Received";
-          row.cells[6].textContent = repeatObj.code;
+          row.cells[2].textContent = "Received";
+          row.cells[3].textContent = repeatObj.code;
         }
       }
       alert("Successfully generated Tests, Please wait 10s for the Statistics");
@@ -140,12 +139,12 @@ button.addEventListener("click", () => {
           const testCode = row.cells[6].textContent;
           const test = data.query.data.find(test => test.code === testCode);
           if (test) {
-            row.cells[5].textContent = "Generated";
-            row.cells[5].classList.add("text-green");
+            row.cells[2].textContent = "Generated";
+            row.cells[2].classList.add("text-green");
             generated++;
           } else {
-            row.cells[5].textContent = "Failed";
-            row.cells[5].classList.add("text-red");
+            row.cells[2].textContent = "Failed";
+            row.cells[2].classList.add("text-red");
             failed++;
           }
           total++;
@@ -173,15 +172,15 @@ function refreshTable() {
       let generated = 0;
       let failed = 0;
       Array.from(document.querySelectorAll('tbody tr')).forEach(row => {
-        const testCode = row.cells[6].textContent;
+        const testCode = row.cells[3].textContent;
         const test = data.query.data.find(test => test.code === testCode);
         if (test) {
-          row.cells[3].textContent = "Generated";
-          row.cells[3].classList.add("text-green");
+          row.cells[2].textContent = "Generated";
+          row.cells[2].classList.add("text-green");
           generated++;
         } else {
-          row.cells[3].textContent = "Failed";
-          row.cells[3].classList.add("text-red");
+          row.cells[2].textContent = "Failed";
+          row.cells[2].classList.add("text-red");
           failed++;
         }
         total++;
