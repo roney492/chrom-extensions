@@ -57,7 +57,7 @@ data.map((element, index) => {
 // Wait for all the promises to complete using Promise.all()
 Promise.all(promises).then(() => {
   $("#generate-tests").html('Generate and send tests').prop('disabled', false);
-
+  $("#export-btn").prop('disabled', false);
 });
 
 
@@ -97,6 +97,11 @@ button.addEventListener("click", () => {
     user_details: candidates
   };
 
+  if($('#InterviewSiteStatus').text() == 'OFFLINE')
+  {
+    alert("You are not logged in to the interview site. Kindly login first and try again");
+    return;
+  }
   fetch('https://int-mng.cdmx.io/api/admin/tests/mass_generate_ext', {
     method: 'POST',
     headers: {
