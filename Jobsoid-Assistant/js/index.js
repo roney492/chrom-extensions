@@ -30,17 +30,18 @@ data.map((element, index) => {
           const nameParts = result.FullName.split(' ');
           const last_name = nameParts.pop();
           const first_name = nameParts.join(' ');
+          const phone = result.Phone.replace(/[^\d+]/g, '');
 
           $("#" + element + " td:eq(1)").text(first_name + ' ' + last_name);          
           $("#" + element + " td:eq(2)").text("Ready");
           $("#" + element + " td:eq(3)").text("Waiting");
           $("#" + element + " td:eq(4)").text(result.Email);
-          $("#" + element + " td:eq(5)").text(result.Phone);
+          $("#" + element + " td:eq(5)").text(phone);
           $("#" + element + " td:eq(6)").text(result.Jobs[0].Name);
 
           candidates.push({
             email: result.Email,
-            mobile: result.Phone.replace(/\D/g, ''),
+            mobile: phone,
             first_name: first_name,
             last_name: last_name
           });
