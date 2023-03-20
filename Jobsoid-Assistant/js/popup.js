@@ -167,7 +167,7 @@ function selectCandidatesWithScoreBelow100() {
     let score = items[i].querySelector('.assist-score');
     
     // Check if the score value is <= 100
-    if (score && parseInt(score.textContent) <= 100) {
+    if (score && parseInt(score.textContent) <= 100 && parseInt(score.textContent) != 0) {
       // Get the checkbox element within the list item
       let checkbox = items[i].querySelector('input[type="checkbox"]');
       
