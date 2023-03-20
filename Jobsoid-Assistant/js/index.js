@@ -170,12 +170,12 @@ function refreshTable() {
         const testCode = row.cells[6].textContent;
         const test = data.query.data.find(test => test.code === testCode);
         if (test) {
-          row.cells[5].textContent = "Generated";
-          row.cells[5].classList.add("text-green");
+          row.cells[3].textContent = "Generated";
+          row.cells[3].classList.add("text-green");
           generated++;
         } else {
-          row.cells[5].textContent = "Failed";
-          row.cells[5].classList.add("text-red");
+          row.cells[3].textContent = "Failed";
+          row.cells[3].classList.add("text-red");
           failed++;
         }
         total++;
