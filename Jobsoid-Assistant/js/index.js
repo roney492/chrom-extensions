@@ -197,7 +197,7 @@ sendBtn.addEventListener('click', () => {
   .then(data => {
     console.log(data);
     // Close the modal
-    sendModal.modal('hide');
+    $('#sendModal').modal('hide');
   })
   .catch(error => {
     console.error('There was a problem while sending:', error);
@@ -214,16 +214,18 @@ sendBtn.addEventListener('click', () => {
   })
   .then(response => {
     if (!response.ok) {
+      alert("Network error while sending WhatsApp Notifications");
       throw new Error('Network error while sending WhatsApp Notifications');
     }
     return response.json();
   })
   .then(data => {
-    console.log(data);
     // Close the modal
-    sendModal.modal('hide');
+    $('#sendModal').modal('hide');
+    alert("Tests Successfully sent out.");
   })
   .catch(error => {
+    alert('There was a problem while sending WhatsApp Notifications:', error);
     console.error('There was a problem while sending WhatsApp Notifications:', error);
   });
 });
