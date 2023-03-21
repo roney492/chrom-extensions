@@ -6,7 +6,7 @@ var candidates = [];
 
 data.forEach(function (element) {
   $("<tr id='" + element + "'></tr>").appendTo("#table tbody")
-    .append("<td><a href='https://app.jobsoid.com/App/#/Candidates/"+element+"/' target='_blank'>" + element + "<a/></td>")
+    .append("<td><a href='https://app.jobsoid.com/App/#/Candidates/" + element + "/' target='_blank'>" + element + "<a/></td>")
     .append("<td>Fetching...</td>")
     .append("<td>Fetching...</td>")
     .append("<td>Fetching...</td>")
@@ -32,7 +32,7 @@ data.map((element, index) => {
           const first_name = nameParts.join(' ');
           const phone = result.Phone.replace(/[^\d+]/g, '');
 
-          $("#" + element + " td:eq(1)").text(first_name + ' ' + last_name);          
+          $("#" + element + " td:eq(1)").text(first_name + ' ' + last_name);
           $("#" + element + " td:eq(2)").text("Ready");
           $("#" + element + " td:eq(3)").text("Waiting");
           $("#" + element + " td:eq(4)").text(result.Email);
@@ -50,7 +50,7 @@ data.map((element, index) => {
         });
     }, index * 500);
   });
-  
+
   // Add the promise to the promises array
   promises.push(promise);
 });
@@ -97,8 +97,7 @@ button.addEventListener("click", () => {
     user_details: candidates
   };
 
-  if($('#InterviewSiteStatus').text() == 'OFFLINE')
-  {
+  if ($('#InterviewSiteStatus').text() == 'OFFLINE') {
     alert("You are not logged in to the interview site. Kindly login first and try again");
     return;
   }
@@ -156,6 +155,56 @@ button.addEventListener("click", () => {
         document.getElementById("total").textContent = total;
         document.getElementById("generated").textContent = generated;
         document.getElementById("failed").textContent = failed;
+        fetch('https://int-mng.cdmx.io/api/admin/tests/send_checked', {
+        method: 'POST',
+        body: JSON.stringify({
+          sub: "CodeMax || Logic Test",
+          id: testIds
+        }),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log(data);
+          // Close the modal
+          $('#sendModal').modal('hide');
+        })
+        .catch(error => {
+          console.error('There was a problem while sending:', error);
+        });
+      // Sending WhatsApp Notifications
+      fetch('https://int-mng.cdmx.io/api/admin/tests/send_checked_wa', {
+        method: 'POST',
+        body: JSON.stringify({
+          id: testIds
+        }),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+        .then(response => {
+          if (!response.ok) {
+            alert("Network error while sending WhatsApp Notifications");
+            throw new Error('Network error while sending WhatsApp Notifications');
+          }
+          return response.json();
+        })
+        .then(data => {
+          // Close the modal
+          $('#sendModal').modal('hide');
+          alert("Tests Successfully sent out.");
+        })
+        .catch(error => {
+          alert('There was a problem while sending WhatsApp Notifications:', error);
+          console.error('There was a problem while sending WhatsApp Notifications:', error);
+        });
       })
       .catch(error => {
         alert(error);
@@ -163,110 +212,60 @@ button.addEventListener("click", () => {
   }, 10000);
 });
 
-// Get the Send button element
-const sendBtn = document.getElementById('sendTestBtn');
+// // Get the Send button element
+// const sendBtn = document.getElementById('sendTestBtn');
 
-const openModalBtn = document.getElementById('openModalBtn');
-// Add a click event listener to the button
-openModalBtn.addEventListener('click', () => {
-  // Show the modal
-  $('#sendModal').modal('show');
-});
+// const openModalBtn = document.getElementById('openModalBtn');
+// // Add a click event listener to the button
+// openModalBtn.addEventListener('click', () => {
+//   // Show the modal
+//   $('#sendModal').modal('show');
+// });
 
-sendBtn.addEventListener('click', () => {
-  // Get the subject from the text field
-  const subject = document.getElementById('sub').value;
-
-  // Send the POST request to send mails
-  fetch('https://int-mng.cdmx.io/api/admin/tests/send_checked', {
-    method: 'POST',
-    body: JSON.stringify({
-      sub: subject,
-      id: testIds
-    }),
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  })
-  .then(response => {
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    return response.json();
-  })
-  .then(data => {
-    console.log(data);
-    // Close the modal
-    $('#sendModal').modal('hide');
-  })
-  .catch(error => {
-    console.error('There was a problem while sending:', error);
-  });
-  // Sending WhatsApp Notifications
-  fetch('https://int-mng.cdmx.io/api/admin/tests/send_checked_wa', {
-    method: 'POST',
-    body: JSON.stringify({
-      id: testIds
-    }),
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  })
-  .then(response => {
-    if (!response.ok) {
-      alert("Network error while sending WhatsApp Notifications");
-      throw new Error('Network error while sending WhatsApp Notifications');
-    }
-    return response.json();
-  })
-  .then(data => {
-    // Close the modal
-    $('#sendModal').modal('hide');
-    alert("Tests Successfully sent out.");
-  })
-  .catch(error => {
-    alert('There was a problem while sending WhatsApp Notifications:', error);
-    console.error('There was a problem while sending WhatsApp Notifications:', error);
-  });
-});
+// sendBtn.addEventListener('click', () => {
+// });
 
 const refreshButton = document.querySelector('#refresh');
 refreshButton.addEventListener('click', refreshTable);
 
 function refreshTable() {
-  if(document.getElementById("select-profile").value == "Select a profile")
-  {
+  if (document.getElementById("select-profile").value == "Select a profile") {
     alert("Select Profile first");
     return false;
   }
   fetch('https://int-mng.cdmx.io/api/admin/tests/get?status=WAITING&limit=0')
-      .then(response => response.json())
-      .then(data => {
-        let total = 0;
-        let generated = 0;
-        let failed = 0;
-        Array.from(document.querySelectorAll('tbody tr')).forEach(row => {
-          const testCode = row.cells[3].textContent;
-          const test = data.query.data.find(test => test.code === testCode);
-          if (test) {
-            row.cells[2].textContent = "Generated";
-            row.cells[2].classList.add("text-green");
-            generated++;
-          } else {
-            row.cells[2].textContent = "Failed";
-            row.cells[2].classList.add("text-red");
-            failed++;
-          }
-          total++;
-        });
-        // Update the statistics
-        document.getElementById("total").textContent = total;
-        document.getElementById("generated").textContent = generated;
-        document.getElementById("failed").textContent = failed;
-      })
-      .catch(error => {
-        alert(error);
+    .then(response => response.json())
+    .then(data => {
+      let total = 0;
+      let generated = 0;
+      let failed = 0;
+      Array.from(document.querySelectorAll('tbody tr')).forEach(row => {
+        const testCode = row.cells[3].textContent;
+        const test = data.query.data.find(test => test.code === testCode);
+        if (test) {
+          row.cells[2].textContent = "Generated";
+          row.cells[2].classList.add("text-green");
+          generated++;
+        } else {
+          row.cells[2].textContent = "Failed";
+          row.cells[2].classList.add("text-red");
+          failed++;
+        }
+        total++;
       });
+      // Update the statistics
+      document.getElementById("total").textContent = total;
+      document.getElementById("generated").textContent = generated;
+      document.getElementById("failed").textContent = failed;
+      // Get the subject from the text field
+      // const subject = document.getElementById('sub').value;
+
+      // Send the POST request to send mails
+    })
+    .catch(error => {
+      alert(error);
+    });
+    
 }
 
 $(document).ready(function () {
@@ -328,23 +327,23 @@ function checkInterviewSiteStatus() {
     redirect: 'manual', // prevent the browser from following redirects
     cache: 'no-cache' // disable caching to ensure a fresh response is received
   })
-  .then(response => {
-    if (response.ok) {
-      // The request was successful and returned a status code of 200
-      $('#InterviewSiteStatus')
-        .removeClass('bg-warning bg-danger')
-        .addClass('bg-success')
-        .text('ONLINE');
-    } else {
-      // The request failed or returned a non-200 status code
-      $('#InterviewSiteStatus')
-        .removeClass('bg-warning bg-success')
-        .addClass('bg-danger')
-        .text('OFFLINE');
-    }
-  })
-  .catch(error => {
-    console.error(error);
-  });
+    .then(response => {
+      if (response.ok) {
+        // The request was successful and returned a status code of 200
+        $('#InterviewSiteStatus')
+          .removeClass('bg-warning bg-danger')
+          .addClass('bg-success')
+          .text('ONLINE');
+      } else {
+        // The request failed or returned a non-200 status code
+        $('#InterviewSiteStatus')
+          .removeClass('bg-warning bg-success')
+          .addClass('bg-danger')
+          .text('OFFLINE');
+      }
+    })
+    .catch(error => {
+      console.error(error);
+    });
 }
 
