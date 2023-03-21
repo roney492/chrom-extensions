@@ -114,7 +114,8 @@ button.addEventListener("click", () => {
       const rows = tableBody.getElementsByTagName("tr");
       for (let i = 0; i < rows.length; i++) {
         const row = rows[i];
-        const email = row.cells[2].textContent.trim();
+        const email = row.cells[4].textContent.trim();
+        console.log(email)
         const repeatObj = repeatData.find(obj => obj.email === email);
         if (repeatObj) {
           row.cells[2].textContent = "Received";
