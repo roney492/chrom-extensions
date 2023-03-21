@@ -135,7 +135,7 @@ button.addEventListener("click", () => {
         let generated = 0;
         let failed = 0;
         Array.from(document.querySelectorAll('tbody tr')).forEach(row => {
-          const testCode = row.cells[6].textContent;
+          const testCode = row.cells[3].textContent;
           const test = data.query.data.find(test => test.code === testCode);
           if (test) {
             row.cells[2].textContent = "Generated";
@@ -154,7 +154,7 @@ button.addEventListener("click", () => {
         document.getElementById("failed").textContent = failed;
       })
       .catch(error => {
-        alert("Something went wrong");
+        alert(error);
       });
   }, 10000);
 });
@@ -170,38 +170,33 @@ function refreshTable() {
     return false;
   }
   fetch('https://int-mng.cdmx.io/api/admin/tests/get?status=WAITING&limit=0')
-    .then(response => response.json())
-    .then(data => {
-      let total = 0;
-      let generated = 0;
-      let failed = 0;
-      Array.from(document.querySelectorAll('tbody tr')).forEach(row => {
-        const email = row.cells[4].textContent;
-        const profileCode = document.getElementById("select-profile").value;
-        const test = data.query.data.find(test => test.email === email && test.profile_code === profileCode);
-
-        if (test) {
-          row.cells[2].textContent = "Generated";
-          row.cells[2].classList.remove("text-red");
-          row.cells[2].classList.add("text-green");
-          row.cells[3].textContent = test.code;
-          generated++;
-        } else {
-          row.cells[2].textContent = "Failed";
-          row.cells[2].classList.remove("text-green");
-          row.cells[2].classList.add("text-red");
-          failed++;
-        }
-        total++;
+      .then(response => response.json())
+      .then(data => {
+        let total = 0;
+        let generated = 0;
+        let failed = 0;
+        Array.from(document.querySelectorAll('tbody tr')).forEach(row => {
+          const testCode = row.cells[3].textContent;
+          const test = data.query.data.find(test => test.code === testCode);
+          if (test) {
+            row.cells[2].textContent = "Generated";
+            row.cells[2].classList.add("text-green");
+            generated++;
+          } else {
+            row.cells[2].textContent = "Failed";
+            row.cells[2].classList.add("text-red");
+            failed++;
+          }
+          total++;
+        });
+        // Update the statistics
+        document.getElementById("total").textContent = total;
+        document.getElementById("generated").textContent = generated;
+        document.getElementById("failed").textContent = failed;
+      })
+      .catch(error => {
+        alert(error);
       });
-      // Update the statistics
-      document.getElementById("total").textContent = total;
-      document.getElementById("generated").textContent = generated;
-      document.getElementById("failed").textContent = failed;
-    })
-    .catch(error => {
-      alert("Something went wrong");
-    });
 }
 
 $(document).ready(function () {
