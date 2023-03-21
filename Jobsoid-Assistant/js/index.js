@@ -57,7 +57,7 @@ data.map((element, index) => {
 
 // Wait for all the promises to complete using Promise.all()
 Promise.all(promises).then(() => {
-  $("#generate-tests").html('Generate').prop('disabled', false);
+  $("#generate-tests").html('Generate and Send tests').prop('disabled', false);
   $("#export-btn").prop('disabled', false);
 });
 
