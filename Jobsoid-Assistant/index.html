@@ -57,6 +57,7 @@
     <div class="row">
       <div class="col-sm-12 col-md-12 col-lg-12">
         <button id="generate-tests" class="btn btn-primary my-3 mx-2" disabled>Fetching data from Jobsoid...</button>
+        <button id="openModalBtn" class="btn btn-secondary my-3 mx-2">Send Mails</button>
         <button id="export-btn" class="btn btn-success my-3 mx-2" disabled>Copy Data to Clipboard</button>
         <button id="refresh" class="btn btn-secondary my-3 mx-2">Refresh</button>
       </div>
@@ -74,11 +75,56 @@
               <th>Int. Code</th>
               <th>Email</th>
               <th>Mobile</th>
+              <th>Test ID</th>
             </tr>
           </thead>
           <tbody>
           </tbody>
         </table>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="sendModal" tabindex="-1" role="dialog" aria-labelledby="sendModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="sendModalLabel">Send Tests</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="sub">Subject</label>
+            <input type="text" class="form-control" id="sub" placeholder="Enter subject">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button id="sendTestBtn" type="button" class="btn btn-primary">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="sendModal" tabindex="-1" role="dialog" aria-labelledby="sendModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="sendModalLabel">Send Test Results</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="sub">Subject</label>
+            <input type="text" class="form-control" id="sub" placeholder="Enter subject">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button id="sendTestBtn" type="button" class="btn btn-primary">Send</button>
+        </div>
       </div>
     </div>
   </div>

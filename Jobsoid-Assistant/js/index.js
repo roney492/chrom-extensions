@@ -11,6 +11,7 @@ data.forEach(function (element) {
     .append("<td>Fetching...</td>")
     .append("<td>Fetching...</td>")
     .append("<td>Fetching...</td>")
+    .append("<td>Fetching...</td>")
     .append("<td>Fetching...</td>");
 });
 
@@ -36,6 +37,7 @@ data.map((element, index) => {
           $("#" + element + " td:eq(3)").text("Waiting");
           $("#" + element + " td:eq(4)").text(result.Email);
           $("#" + element + " td:eq(5)").text(phone);
+          $("#" + element + " td:eq(6)").text("Waiting");
 
           candidates.push({
             email: result.Email,
@@ -55,7 +57,7 @@ data.map((element, index) => {
 
 // Wait for all the promises to complete using Promise.all()
 Promise.all(promises).then(() => {
-  $("#generate-tests").html('Generate and send tests').prop('disabled', false);
+  $("#generate-tests").html('Generate').prop('disabled', false);
   $("#export-btn").prop('disabled', false);
 });
 
@@ -75,7 +77,7 @@ $("#export-btn").click(function () {
   alert("Copied! Now directly paste it in the Interview site");
 });
 
-
+const testIds = [];
 const button = document.getElementById("generate-tests");
 button.addEventListener("click", () => {
   button.disabled = true;
@@ -120,6 +122,8 @@ button.addEventListener("click", () => {
         if (repeatObj) {
           row.cells[2].textContent = "Received";
           row.cells[3].textContent = repeatObj.code;
+          row.cells[6].textContent = repeatObj.insert_test.identity;
+          testIds.push(repeatObj.insert_test.identity);
         }
       }
       alert("Successfully generated Tests, Please wait 10s for the Statistics");
@@ -159,6 +163,70 @@ button.addEventListener("click", () => {
   }, 10000);
 });
 
+// Get the Send button element
+const sendBtn = document.getElementById('sendTestBtn');
+
+const openModalBtn = document.getElementById('openModalBtn');
+// Add a click event listener to the button
+openModalBtn.addEventListener('click', () => {
+  // Show the modal
+  $('#sendModal').modal('show');
+});
+
+sendBtn.addEventListener('click', () => {
+  // Get the subject from the text field
+  const subject = document.getElementById('sub').value;
+
+  // Send the POST request to send mails
+  fetch('https://int-mng.cdmx.io/api/admin/tests/send_checked', {
+    method: 'POST',
+    body: JSON.stringify({
+      sub: subject,
+      id: testIds
+    }),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
+  .then(data => {
+    console.log(data);
+    // Close the modal
+    sendModal.modal('hide');
+  })
+  .catch(error => {
+    console.error('There was a problem while sending:', error);
+  });
+  // Sending WhatsApp Notifications
+  fetch('https://int-mng.cdmx.io/api/admin/tests/send_checked_wa', {
+    method: 'POST',
+    body: JSON.stringify({
+      id: testIds
+    }),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network error while sending WhatsApp Notifications');
+    }
+    return response.json();
+  })
+  .then(data => {
+    console.log(data);
+    // Close the modal
+    sendModal.modal('hide');
+  })
+  .catch(error => {
+    console.error('There was a problem while sending WhatsApp Notifications:', error);
+  });
+});
 
 const refreshButton = document.querySelector('#refresh');
 refreshButton.addEventListener('click', refreshTable);
