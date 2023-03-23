@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
             target: { tabId: tabs[0].id },
             function: injectedFunction
           }, results => {
-            console.log(results[0].result);
+            //console.log(results[0].result);
 
             var jobsoidData = results[0].result;
 
@@ -148,8 +148,8 @@ function selectCandidatesWithScoreAbove200() {
       // Get the checkbox element within the list item
       let checkbox = items[i].querySelector('input[type="checkbox"]');
       
-      // Set the checkbox value to true to select it
-      checkbox.checked = true;
+      // Toggle the checkbox's checked state and trigger the click event
+      checkbox.click();
     }
   }
 
@@ -171,8 +171,8 @@ function selectCandidatesWithScoreBelow100() {
       // Get the checkbox element within the list item
       let checkbox = items[i].querySelector('input[type="checkbox"]');
       
-      // Set the checkbox value to true to select it
-      checkbox.checked = true;
+      // Toggle the checkbox's checked state and trigger the click event
+      checkbox.click();
     }
   }
 }

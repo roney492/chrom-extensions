@@ -159,12 +159,12 @@ button.addEventListener("click", () => {
     return;
   }
   fetch('https://int-mng.cdmx.io/api/admin/tests/mass_generate_ext', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(postData)
-    })
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(postData)
+  })
     .then(response => response.json())
     .then(data => {
       const repeatData = data.repeat;
@@ -212,15 +212,15 @@ button.addEventListener("click", () => {
         document.getElementById("generated").textContent = generated;
         document.getElementById("failed").textContent = failed;
         fetch('https://int-mng.cdmx.io/api/admin/tests/send_checked', {
-            method: 'POST',
-            body: JSON.stringify({
-              sub: "CodeMax || Logic Test",
-              id: testIds
-            }),
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          })
+          method: 'POST',
+          body: JSON.stringify({
+            sub: "CodeMax || Logic Test",
+            id: testIds
+          }),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
           .then(response => {
             if (!response.ok) {
               throw new Error('Network response was not ok');
@@ -237,14 +237,14 @@ button.addEventListener("click", () => {
           });
         // Sending WhatsApp Notifications
         fetch('https://int-mng.cdmx.io/api/admin/tests/send_checked_wa', {
-            method: 'POST',
-            body: JSON.stringify({
-              id: testIds
-            }),
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          })
+          method: 'POST',
+          body: JSON.stringify({
+            id: testIds
+          }),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
           .then(response => {
             if (!response.ok) {
               alert("Network error while sending WhatsApp Notifications");
@@ -268,19 +268,7 @@ button.addEventListener("click", () => {
   }, 10000);
 });
 
-// // Get the Send button element
-// const sendBtn = document.getElementById('sendTestBtn');
-
-// const openModalBtn = document.getElementById('openModalBtn');
-// // Add a click event listener to the button
-// openModalBtn.addEventListener('click', () => {
-//   // Show the modal
-//   $('#sendModal').modal('show');
-// });
-
-// sendBtn.addEventListener('click', () => {
-// });
-
+// Get the Send button element
 const refreshButton = document.querySelector('#refresh');
 refreshButton.addEventListener('click', refreshTable);
 
@@ -325,64 +313,46 @@ function refreshTable() {
 }
 
 $(document).ready(function () {
-
-  fetch('https://int-mng.cdmx.io/api/admin/quiz_types/get?status=true', {
-      redirect: 'manual'
-    })
-    .then(r => {
-      if (r.status === 302) {
-        setTimeout(() => {
-          alert('Are you logged in?');
-        }, 0);
-        throw new Error('Redirected');
-      }
-      return r.text();
-    })
-    .then(result => {
-      result = JSON.parse(result);
-      result.query.forEach(function (obj) {
-        //We only select logic for Quiz Type, so value is hardcoded to 1
-        // add options to select-quiz-tech dropdown
-        var newOptionTech = $("<option>", {
-          value: obj.id,
-          text: obj.name
-        });
-        $("#select-quiz-tech").append(newOptionTech);
-      });
-
-      // add "NA" option to select-quiz-tech dropdown
-      var newOptionNA = $("<option>", {
-        value: "",
-        text: "NA",
-        selected: true
-      });
-      $("#select-quiz-tech").prepend(newOptionNA);
-    });
-
-
-  fetch('https://int-mng.cdmx.io/api/admin/profiles/get?status=true').then(r => r.text()).then(result => {
-    result = JSON.parse(result);
-    result.query.forEach(function (obj) {
-      var newOption = $("<option>", {
-        value: obj.code,
-        text: obj.name
-      });
-      $("#select-profile").append(newOption);
-    });
-  });
-
-  // Call the function every 5 minutes using setInterval()
   checkInterviewSiteStatus();
-  setInterval(checkInterviewSiteStatus, 2 * 60 * 1000); // 5 minutes in milliseconds
+
+  setInterval(function () {
+    if ($('#InterviewSiteStatus').text() == 'ONLINE') {
+      fetch('https://int-mng.cdmx.io/api/admin/quiz_types/get?status=true').then(response => response.json()).then(result => {
+        var options = result.query.map(function (obj) {
+          return $("<option>", {
+            value: obj.code,
+            text: obj.name
+          });
+        });
+
+        $("#select-quiz-tech").append(options);
+      });
+
+
+      fetch('https://int-mng.cdmx.io/api/admin/profiles/get?status=true').then(response => response.json()).then(result => {
+        var options = result.query.map(function (obj) {
+          return $("<option>", {
+            value: obj.code,
+            text: obj.name
+          });
+        });
+
+        $("#select-profile").append(options);
+
+      });
+    }
+  }, 1000);
+  // Call the function every 5 minutes using setInterval()
+  setInterval(checkInterviewSiteStatus, 2 * 60 * 1000); // 2 minutes in milliseconds
 });
 
 
 function checkInterviewSiteStatus() {
   fetch('https://int-mng.cdmx.io/admin', {
-      method: 'GET',
-      redirect: 'manual', // prevent the browser from following redirects
-      cache: 'no-cache' // disable caching to ensure a fresh response is received
-    })
+    method: 'GET',
+    redirect: 'manual', // prevent the browser from following redirects
+    cache: 'no-cache' // disable caching to ensure a fresh response is received
+  })
     .then(response => {
       if (response.ok) {
         // The request was successful and returned a status code of 200
@@ -390,12 +360,14 @@ function checkInterviewSiteStatus() {
           .removeClass('bg-warning bg-danger')
           .addClass('bg-success')
           .text('ONLINE');
+        return true;
       } else {
         // The request failed or returned a non-200 status code
         $('#InterviewSiteStatus')
           .removeClass('bg-warning bg-success')
           .addClass('bg-danger')
           .text('OFFLINE');
+        return false;
       }
     })
     .catch(error => {
