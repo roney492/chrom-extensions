@@ -315,7 +315,7 @@ function refreshTable() {
 $(document).ready(function () {
   checkInterviewSiteStatus();
 
-  setInterval(function () {
+  setTimeout(function () {
     if ($('#InterviewSiteStatus').text() == 'ONLINE') {
       fetch('https://int-mng.cdmx.io/api/admin/quiz_types/get?status=true').then(response => response.json()).then(result => {
         var options = result.query.map(function (obj) {
@@ -342,7 +342,7 @@ $(document).ready(function () {
       });
     }
   }, 1000);
-  // Call the function every 5 minutes using setInterval()
+  // Call the function every 2 minutes using setInterval()
   setInterval(checkInterviewSiteStatus, 2 * 60 * 1000); // 2 minutes in milliseconds
 });
 
