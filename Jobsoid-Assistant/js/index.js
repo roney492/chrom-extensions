@@ -17,7 +17,8 @@ data.forEach(function (element) {
 
 // Create an array to store all the promises
 let promises = [];
-
+let missingMobileNumbers = false;
+let missingEmail = false;
 // Loop through the data array and create a promise for each element
 data.map((element, index) => {
   let promise = new Promise((resolve) => {
@@ -47,6 +48,28 @@ data.map((element, index) => {
           });
 
           resolve();
+          const tableBody = document.querySelector("#table tbody");
+          const rows = tableBody.getElementsByTagName("tr");
+          for (let i = 0; i < rows.length; i++) {
+            const row = rows[i];
+            const mobile = row.cells[5].textContent.trim();
+            const email = row.cells[4].textContent.trim();
+
+            if (!mobile) {
+              missingMobileNumbers = true;
+              row.cells[5].style.color = "red";
+              row.cells[5].textContent = "Missing Mobile number!!";
+            } else {
+              row.cells[5].style.color = "initial";
+            }
+            if (!email) {
+              missingEmail = true;
+              row.cells[4].style.color = "red";
+              row.cells[4].textContent = "Missing Email!!";
+            } else {
+              row.cells[4].style.color = "initial";
+            }
+          }
         });
     }, index * 500);
   });
@@ -57,8 +80,12 @@ data.map((element, index) => {
 
 // Wait for all the promises to complete using Promise.all()
 Promise.all(promises).then(() => {
-  $("#generate-tests").html('Generate and Send tests').prop('disabled', false);
-  $("#export-btn").prop('disabled', false);
+  if (missingEmail == true || missingMobileNumbers == true) {
+    $("#generate-tests").html('Missing mobile or email addresses!!').prop('disabled', true);
+  } else {
+    $("#generate-tests").html('Generate and Send tests').prop('disabled', false);
+    $("#export-btn").prop('disabled', false);
+  }
 });
 
 
@@ -71,10 +98,37 @@ $("#export-btn").click(function () {
     var mobile = $(this).find("td:eq(5)").text();
     tableData += name + "\n" + email + "\n" + mobile + "\n\n";
   });
+  const tableBody = document.querySelector("#table tbody");
+  const rows = tableBody.getElementsByTagName("tr");
+  for (let i = 0; i < rows.length; i++) {
+    const row = rows[i];
+    const mobile = row.cells[5].textContent.trim();
+    const email = row.cells[4].textContent.trim();
 
-  navigator.clipboard.writeText(tableData);
+    if (!mobile) {
+      missingMobileNumbers = true;
+      row.cells[5].style.color = "red";
+      row.cells[5].textContent = "Missing Mobile number!!";
+    } else {
+      row.cells[5].style.color = "initial";
+    }
+    if (!email) {
+      missingEmail = true;
+      row.cells[4].style.color = "red";
+      row.cells[4].textContent = "Missing Email!!";
+    } else {
+      row.cells[4].style.color = "initial";
+    }
+  }
+  if (missingEmail == true || missingMobileNumbers == true) {
+    alert("Missing mobile numbers or email addresses, Please check");
+    return;
+  } else {
+    navigator.clipboard.writeText(tableData);
 
-  alert("Copied! Now directly paste it in the Interview site");
+    alert("Copied! Now directly paste it in the Interview site");
+  }
+
 });
 
 const testIds = [];
@@ -83,9 +137,12 @@ button.addEventListener("click", () => {
   button.disabled = true;
   const selectProfileValue = document.getElementById("select-profile").value;
   const selectTechQuizValue = document.getElementById("select-quiz-tech").value;
-
   if (selectProfileValue == "Select a profile" || selectTechQuizValue == null) {
     alert("Please select a quiz type, profile, and quiz tech before generating tests.");
+    return;
+  }
+  if (missingEmail == true || missingMobileNumbers == true) {
+    alert("Missing mobile numbers or email addresses, Please check");
     return;
   }
 
@@ -102,12 +159,12 @@ button.addEventListener("click", () => {
     return;
   }
   fetch('https://int-mng.cdmx.io/api/admin/tests/mass_generate_ext', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(postData)
-  })
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(postData)
+    })
     .then(response => response.json())
     .then(data => {
       const repeatData = data.repeat;
@@ -116,7 +173,6 @@ button.addEventListener("click", () => {
       for (let i = 0; i < rows.length; i++) {
         const row = rows[i];
         const email = row.cells[4].textContent.trim();
-        console.log(email)
         const repeatObj = repeatData.find(obj => obj.email === email);
         if (repeatObj) {
           row.cells[2].textContent = "Received";
@@ -156,55 +212,55 @@ button.addEventListener("click", () => {
         document.getElementById("generated").textContent = generated;
         document.getElementById("failed").textContent = failed;
         fetch('https://int-mng.cdmx.io/api/admin/tests/send_checked', {
-        method: 'POST',
-        body: JSON.stringify({
-          sub: "CodeMax || Logic Test",
-          id: testIds
-        }),
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          return response.json();
-        })
-        .then(data => {
-          console.log(data);
-          // Close the modal
-          $('#sendModal').modal('hide');
-        })
-        .catch(error => {
-          console.error('There was a problem while sending:', error);
-        });
-      // Sending WhatsApp Notifications
-      fetch('https://int-mng.cdmx.io/api/admin/tests/send_checked_wa', {
-        method: 'POST',
-        body: JSON.stringify({
-          id: testIds
-        }),
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
-        .then(response => {
-          if (!response.ok) {
-            alert("Network error while sending WhatsApp Notifications");
-            throw new Error('Network error while sending WhatsApp Notifications');
-          }
-          return response.json();
-        })
-        .then(data => {
-          // Close the modal
-          $('#sendModal').modal('hide');
-          alert("Tests Successfully sent out.");
-        })
-        .catch(error => {
-          alert('There was a problem while sending WhatsApp Notifications:', error);
-          console.error('There was a problem while sending WhatsApp Notifications:', error);
-        });
+            method: 'POST',
+            body: JSON.stringify({
+              sub: "CodeMax || Logic Test",
+              id: testIds
+            }),
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+            return response.json();
+          })
+          .then(data => {
+            console.log(data);
+            // Close the modal
+            $('#sendModal').modal('hide');
+          })
+          .catch(error => {
+            console.error('There was a problem while sending:', error);
+          });
+        // Sending WhatsApp Notifications
+        fetch('https://int-mng.cdmx.io/api/admin/tests/send_checked_wa', {
+            method: 'POST',
+            body: JSON.stringify({
+              id: testIds
+            }),
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          })
+          .then(response => {
+            if (!response.ok) {
+              alert("Network error while sending WhatsApp Notifications");
+              throw new Error('Network error while sending WhatsApp Notifications');
+            }
+            return response.json();
+          })
+          .then(data => {
+            // Close the modal
+            $('#sendModal').modal('hide');
+            alert("Tests Successfully sent out.");
+          })
+          .catch(error => {
+            alert('There was a problem while sending WhatsApp Notifications:', error);
+            console.error('There was a problem while sending WhatsApp Notifications:', error);
+          });
       })
       .catch(error => {
         alert(error);
@@ -265,14 +321,14 @@ function refreshTable() {
     .catch(error => {
       alert(error);
     });
-    
+
 }
 
 $(document).ready(function () {
 
   fetch('https://int-mng.cdmx.io/api/admin/quiz_types/get?status=true', {
-    redirect: 'manual'
-  })
+      redirect: 'manual'
+    })
     .then(r => {
       if (r.status === 302) {
         setTimeout(() => {
@@ -323,10 +379,10 @@ $(document).ready(function () {
 
 function checkInterviewSiteStatus() {
   fetch('https://int-mng.cdmx.io/admin', {
-    method: 'GET',
-    redirect: 'manual', // prevent the browser from following redirects
-    cache: 'no-cache' // disable caching to ensure a fresh response is received
-  })
+      method: 'GET',
+      redirect: 'manual', // prevent the browser from following redirects
+      cache: 'no-cache' // disable caching to ensure a fresh response is received
+    })
     .then(response => {
       if (response.ok) {
         // The request was successful and returned a status code of 200
@@ -346,4 +402,3 @@ function checkInterviewSiteStatus() {
       console.error(error);
     });
 }
-
