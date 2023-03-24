@@ -124,7 +124,7 @@ function injectedJavascriptScore() {
     let newSpan = document.createElement('span');
     // Set the background color and text content of the new span element based on the value of the existing span element
     newSpan.textContent = span.textContent;
-    newSpan.style.cssText = "font-size: 18px !important; background-color: " + (span.textContent === "0" ? "red" : span.textContent <= 100 ? "#FFCCCB" : span.textContent <= 150 ? "#FFD580" : span.textContent <= 200 ? "lightyellow" : span.textContent <= 250 ? "lightgreen" : "lightblue") + "; border: 1px solid grey; border-radius: 3px; padding-left: 2px; padding-right: 2px; margin-left: 4px;";
+    newSpan.style.cssText = "font-size: 18px !important; background-color: " + (span.textContent === "0" ? "red" : span.textContent <= 80 ? "#F5A9A9" : span.textContent <= 140 ? "#F6CEEC" : span.textContent <= 200 ? "lightyellow" : span.textContent <= 250 ? "lightgreen" : "lightblue") + "; border: 1px solid grey; border-radius: 3px; padding-left: 2px; padding-right: 2px; margin-left: 4px;";
     newSpan.classList.add('assist-score');
 
     // Add the new span element to the link element
@@ -143,8 +143,8 @@ function selectCandidatesWithScoreAbove200() {
     // Get the 'assist-score' element within the list item
     let score = items[i].querySelector('.assist-score');
     
-    // Check if the score value is greater than 200
-    if (score && parseInt(score.textContent) > 200) {
+    // Check if the score value is greater than 140
+    if (score && parseInt(score.textContent) > 140) {
       // Get the checkbox element within the list item
       let checkbox = items[i].querySelector('input[type="checkbox"]');
       
@@ -166,8 +166,8 @@ function selectCandidatesWithScoreBelow100() {
     // Get the 'assist-score' element within the list item
     let score = items[i].querySelector('.assist-score');
     
-    // Check if the score value is <= 100
-    if (score && parseInt(score.textContent) <= 100 && parseInt(score.textContent) != 0) {
+    // Check if the score value is <= 140
+    if (score && parseInt(score.textContent) <= 140 && parseInt(score.textContent) != 0) {
       // Get the checkbox element within the list item
       let checkbox = items[i].querySelector('input[type="checkbox"]');
       
