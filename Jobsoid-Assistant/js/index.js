@@ -325,6 +325,12 @@ $(document).ready(function () {
           });
         });
 
+        
+        options.unshift($("<option>", {
+          value: "",
+          text: "N/A"
+        }));
+
         $("#select-quiz-tech").append(options);
       });
 
@@ -336,7 +342,6 @@ $(document).ready(function () {
             text: obj.name
           });
         });
-
         $("#select-profile").append(options);
 
       });
