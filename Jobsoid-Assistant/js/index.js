@@ -131,7 +131,51 @@ $("#export-btn").click(function () {
 
 });
 
-const testIds = [];
+let testId
+const sendCheckedTests = () => {
+  fetch('https://int-mng.cx-rad.in/api/admin/tests/send_checked', {
+      method: 'POST',
+      body: JSON.stringify({
+        sub: "CodeMax || Logic Test",
+        id: [testId] // Only send testId which are not Failed
+      }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      if (response.ok) {
+        fetch('https://int-mng.cx-rad.in/api/admin/tests/send_checked_wa', {
+          method: 'POST',
+          body: JSON.stringify({
+            id: [testId] // Only send testId which are not Failed
+          }),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network error while sending WhatsApp Notifications');
+          }
+          return response.json();
+        })
+        .catch(error => {
+          console.error('There was a problem while sending WhatsApp Notifications:', error);
+        });
+      }
+    })
+    .catch(error => {
+      alert(error);
+    });
+};
+      // Only send WhatsApp notifications if sending checked tests was successful
+      
+
+
 const button = document.getElementById("generate-tests");
 button.addEventListener("click", () => {
   button.disabled = true;
@@ -145,49 +189,91 @@ button.addEventListener("click", () => {
     alert("Missing mobile numbers or email addresses, Please check");
     return;
   }
-
-  const postData = {
-    profile_code: selectProfileValue,
-    quiz_type_id: "1", //We only generate Logic Test from Jobsoid.
-    tech_quiz_type_id: selectTechQuizValue,
-    type: 'CANDIDATE',
-    user_details: candidates
-  };
-
   if ($('#InterviewSiteStatus').text() == 'OFFLINE') {
     alert("You are not logged in to the interview site. Kindly login first and try again");
     return;
   }
-  fetch('https://int-mng.cdmx.io/api/admin/tests/mass_generate_ext', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(postData)
-  })
-    .then(response => response.json())
-    .then(data => {
-      const repeatData = data.repeat;
-      const tableBody = document.querySelector("#table tbody");
-      const rows = tableBody.getElementsByTagName("tr");
-      for (let i = 0; i < rows.length; i++) {
+  const tableBody = document.querySelector("#table tbody");
+  const rows = tableBody.getElementsByTagName("tr");
+  // Loop through each row and send a request to generate new user
+  const generateNewUser = (postData) => {
+    return fetch('https://int-mng.cx-rad.in/api/admin/tests/generate_test_newuser', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(postData)
+      })
+      .then(response => response.json())
+      .then(data => {
+        return data;
+      });
+  };
+  const generateUsers = () => {
+    let i = 0;
+    const generateNext = () => {
+
+      if (i < rows.length) {
         const row = rows[i];
+        // Split the name into first and last name
+        const nameParts = row.cells[1].textContent.trim().split(' ');
+        const last_name = nameParts.pop();
+        const first_name = nameParts.join(' ');
+        const quiz_type_id = "1";
+        const tech_quiz_type_id = selectTechQuizValue;
+        const profile_code = selectProfileValue;
         const email = row.cells[4].textContent.trim();
-        const repeatObj = repeatData.find(obj => obj.email === email);
-        if (repeatObj) {
-          row.cells[2].textContent = "Received";
-          row.cells[3].textContent = repeatObj.code;
-          row.cells[6].textContent = repeatObj.insert_test.identity;
-          testIds.push(repeatObj.insert_test.identity);
-        }
+        const mobile = row.cells[5].textContent.trim().replace(/[^\d]/g, '');
+        const type = 'CANDIDATE';
+
+        const postData = {
+          quiz_type_id,
+          tech_quiz_type_id,
+          profile_code,
+          first_name,
+          last_name,
+          email,
+          mobile,
+          type
+        };
+
+        generateNewUser(postData)
+          .then(data => {
+            console.log(data)
+              if (data.code) {
+                testId = data.id;
+                row.cells[3].textContent = data.code;
+                row.cells[6].textContent = data.id;
+                return sendCheckedTests(testId);
+            } else {
+              row.cells[2].textContent = "Failed";
+              row.cells[2].classList.add("text-red");
+            }
+          })
+          .then(() => {
+            row.cells[2].textContent = "Sent";
+            row.cells[2].classList.remove("text-red");
+            row.cells[2].classList.add("text-green");
+          })
+          .catch(error => {
+            console.error(error);
+            row.cells[2].textContent = "Failed";
+            row.cells[2].classList.add("text-red");
+          })
+          .finally(() => {
+            i++;
+            generateNext();
+          });
+      } else {
+        alert("Successfully generated users, Please wait 10s for the Statistics");
       }
-      alert("Successfully generated Tests, Please wait 10s for the Statistics");
-    })
-    .catch(error => {
-      alert("Something went wrong");
-    });
+    };
+    generateNext();
+  };
+  generateUsers();
+
   setTimeout(() => {
-    fetch('https://int-mng.cdmx.io/api/admin/tests/get?status=WAITING&limit=0')
+    fetch('https://int-mng.cx-rad.in/api/admin/tests/get?status=WAITING&limit=0')
       .then(response => response.json())
       .then(data => {
         let total = 0;
@@ -198,6 +284,7 @@ button.addEventListener("click", () => {
           const test = data.query.data.find(test => test.code === testCode);
           if (test) {
             row.cells[2].textContent = "Generated";
+            row.cells[2].classList.remove("text-red");
             row.cells[2].classList.add("text-green");
             generated++;
           } else {
@@ -211,63 +298,9 @@ button.addEventListener("click", () => {
         document.getElementById("total").textContent = total;
         document.getElementById("generated").textContent = generated;
         document.getElementById("failed").textContent = failed;
-        fetch('https://int-mng.cdmx.io/api/admin/tests/send_checked', {
-          method: 'POST',
-          body: JSON.stringify({
-            sub: "CodeMax || Logic Test",
-            id: testIds
-          }),
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        })
-          .then(response => {
-            if (!response.ok) {
-              throw new Error('Network response was not ok');
-            }
-            return response.json();
-          })
-          .then(data => {
-            console.log(data);
-            // Close the modal
-            $('#sendModal').modal('hide');
-          })
-          .catch(error => {
-            console.error('There was a problem while sending:', error);
-          });
-        // Sending WhatsApp Notifications
-        fetch('https://int-mng.cdmx.io/api/admin/tests/send_checked_wa', {
-          method: 'POST',
-          body: JSON.stringify({
-            id: testIds
-          }),
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        })
-          .then(response => {
-            if (!response.ok) {
-              alert("Network error while sending WhatsApp Notifications");
-              throw new Error('Network error while sending WhatsApp Notifications');
-            }
-            return response.json();
-          })
-          .then(data => {
-            // Close the modal
-            $('#sendModal').modal('hide');
-            alert("Tests Successfully sent out.");
-          })
-          .catch(error => {
-            alert('There was a problem while sending WhatsApp Notifications:', error);
-            console.error('There was a problem while sending WhatsApp Notifications:', error);
-          });
-      })
-      .catch(error => {
-        alert(error);
-      });
-  }, 10000);
-});
-
+      }, 10000);
+  });
+})
 // Get the Send button element
 const refreshButton = document.querySelector('#refresh');
 refreshButton.addEventListener('click', refreshTable);
@@ -277,7 +310,7 @@ function refreshTable() {
     alert("Select Profile first");
     return false;
   }
-  fetch('https://int-mng.cdmx.io/api/admin/tests/get?status=WAITING&limit=0')
+  fetch('https://int-mng.cx-rad.in/api/admin/tests/get?status=WAITING&limit=0')
     .then(response => response.json())
     .then(data => {
       let total = 0;
@@ -288,6 +321,7 @@ function refreshTable() {
         const test = data.query.data.find(test => test.code === testCode);
         if (test) {
           row.cells[2].textContent = "Generated";
+          row.cells[2].classList.remove("text-red");
           row.cells[2].classList.add("text-green");
           generated++;
         } else {
@@ -317,25 +351,27 @@ $(document).ready(function () {
 
   setTimeout(function () {
     if ($('#InterviewSiteStatus').text() == 'ONLINE') {
-      fetch('https://int-mng.cdmx.io/api/admin/quiz_types/get?status=true').then(response => response.json()).then(result => {
+      fetch('https://int-mng.cx-rad.in/api/admin/quiz_types/get?status=true').then(response => response.json()).then(result => {
         var options = result.query.map(function (obj) {
           return $("<option>", {
             value: obj.code,
             text: obj.name
           });
         });
-
-        
-        options.unshift($("<option>", {
-          value: "",
-          text: "N/A"
-        }));
-
         $("#select-quiz-tech").append(options);
+        // add "NA" option to select-quiz-tech dropdown
+        var newOptionNA = $("<option>", {
+          value: "",
+          text: "NA",
+          selected: true
+        });
+        $("#select-quiz-tech").prepend(newOptionNA);
+
+
       });
 
 
-      fetch('https://int-mng.cdmx.io/api/admin/profiles/get?status=true').then(response => response.json()).then(result => {
+      fetch('https://int-mng.cx-rad.in/api/admin/profiles/get?status=true').then(response => response.json()).then(result => {
         var options = result.query.map(function (obj) {
           return $("<option>", {
             value: obj.code,
@@ -353,11 +389,11 @@ $(document).ready(function () {
 
 
 function checkInterviewSiteStatus() {
-  fetch('https://int-mng.cdmx.io/admin', {
-    method: 'GET',
-    redirect: 'manual', // prevent the browser from following redirects
-    cache: 'no-cache' // disable caching to ensure a fresh response is received
-  })
+  fetch('https://int-mng.cx-rad.in/admin', {
+      method: 'GET',
+      redirect: 'manual', // prevent the browser from following redirects
+      cache: 'no-cache' // disable caching to ensure a fresh response is received
+    })
     .then(response => {
       if (response.ok) {
         // The request was successful and returned a status code of 200
