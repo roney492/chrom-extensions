@@ -196,7 +196,7 @@ button.addEventListener("click", () => {
       const rows = tableBody.getElementsByTagName("tr");
       // Loop through each row and send a request to generate new user
       const generateNewUser = (postData) => {
-        return fetch('https://int-mng.cx-rad.in/api/admin/tests/generate_test_newuser', {
+        return fetch('https://int-mng.cx-rad.in/api/admin/tests/generate_test_jobsoid', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
@@ -218,6 +218,7 @@ button.addEventListener("click", () => {
             const nameParts = row.cells[1].textContent.trim().split(' ');
             const last_name = nameParts.pop();
             const first_name = nameParts.join(' ');
+            const jobsoid_id = row.cells[0].textContent.trim();
             const quiz_type_id = "1";
             const tech_quiz_type_id = selectTechQuizValue;
             const profile_code = selectProfileValue;
@@ -226,6 +227,7 @@ button.addEventListener("click", () => {
             const type = 'CANDIDATE';
 
             const postData = {
+              jobsoid_id,
               quiz_type_id,
               tech_quiz_type_id,
               profile_code,
