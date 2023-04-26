@@ -12,6 +12,7 @@ data.forEach(function (element) {
     .append("<td>Fetching...</td>")
     .append("<td>Fetching...</td>")
     .append("<td>Fetching...</td>")
+    .append("<td>Fetching...</td>")
     .append("<td>Fetching...</td>");
 });
 
@@ -32,6 +33,7 @@ data.map((element, index) => {
           const last_name = nameParts.pop();
           const first_name = nameParts.join(' ');
           const phone = result.Phone.replace(/[^\d+]/g, '');
+          const jobId = result.Jobs.find(job => job.Status === "New")?.Id || "";
 
           $("#" + element + " td:eq(1)").text(first_name + ' ' + last_name);
           $("#" + element + " td:eq(2)").text("Ready");
@@ -39,6 +41,7 @@ data.map((element, index) => {
           $("#" + element + " td:eq(4)").text(result.Email);
           $("#" + element + " td:eq(5)").text(phone);
           $("#" + element + " td:eq(6)").text("Waiting");
+          $("#" + element + " td:eq(7)").text(jobId);
 
           candidates.push({
             email: result.Email,
@@ -131,7 +134,7 @@ $("#export-btn").click(function () {
 
 });
 let testId
-const sendCheckedTests = (testId) => {
+const sendCheckedTests = (testId,candidateId,jobsoid_jobid, row) => {
   fetch('https://int-mng.cdmx.io/api/admin/tests/send_checked', {
       method: 'POST',
       body: JSON.stringify({
@@ -144,9 +147,64 @@ const sendCheckedTests = (testId) => {
     })
     .then(response => {
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error('Network error occured.');
       }
       if (response.ok) {
+        fetch('https://app.jobsoid.com/api/candidates/pipelinestage/update', {
+        method: 'PUT',
+        body: JSON.stringify({
+          Candidates: [
+            {
+              CandidateId: candidateId,
+              JobId: jobsoid_jobid,
+              PipelineStageId: 107610
+            }
+          ],
+          Note: {
+            NoteId: 0,
+            ReviewId: 0,
+            DocumentId: 0,
+            ContactId: 0,
+            ShowAdmin: true,
+            ShowManager: true,
+            ShowUser: true,
+            ShowExternal: true,
+            ShowPublic: true
+          },
+          ReasonId: 0,
+          ReasonText: "",
+          SendEmail: false,
+          SendSms: false,
+          SendQuestionnaire: false,
+          SendVideoScreen: false,
+          EmailTemplateId: 0,
+          SmsTemplateId: 0,
+          QuestionnaireId: 0,
+          VideoScreenId: 0,
+          CustomEmail: {
+            Subject: "",
+            Body: ""
+          },
+          CustomSms: {
+            Text: ""
+          },
+          ScheduledTime: null,
+          SendLater: false
+        }),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network error while updating status');
+        }
+        row.cells[2].textContent = "Status updated";
+      })
+      .catch(error => {
+        console.error('There was a problem while updating pipeline stage:', error);
+        row.cells[2].textContent = "Status update failed";
+      });
         fetch('https://int-mng.cdmx.io/api/admin/tests/send_checked_wa', {
             method: 'POST',
             body: JSON.stringify({
@@ -215,10 +273,12 @@ button.addEventListener("click", () => {
           if (i < rows.length) {
             const row = rows[i];
             // Split the name into first and last name
+            const candidateId = row.cells[0].textContent.trim();
             const nameParts = row.cells[1].textContent.trim().split(' ');
             const last_name = nameParts.pop();
             const first_name = nameParts.join(' ');
             const jobsoid_id = row.cells[0].textContent.trim();
+            const jobsoid_jobid = row.cells[7].textContent.trim();
             const quiz_type_id = "1";
             const tech_quiz_type_id = selectTechQuizValue;
             const profile_code = selectProfileValue;
@@ -228,6 +288,7 @@ button.addEventListener("click", () => {
 
             const postData = {
               jobsoid_id,
+              jobsoid_jobid,
               quiz_type_id,
               tech_quiz_type_id,
               profile_code,
@@ -240,12 +301,11 @@ button.addEventListener("click", () => {
 
             generateNewUser(postData)
               .then(data => {
-                console.log(data)
                 if (data.code) {
                   testId = data.id;
                   row.cells[3].textContent = data.code;
                   row.cells[6].textContent = data.id;
-                  return sendCheckedTests(testId);
+                  return sendCheckedTests(testId,candidateId,jobsoid_jobid, row);
                 } else {
                   row.cells[2].textContent = "Failed";
                   row.cells[2].classList.add("text-red");
