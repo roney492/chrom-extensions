@@ -484,6 +484,8 @@ syncButton.addEventListener('click', async () => {
 
     // Process each item in the response
     for (const item of data.query) {
+      // Check if jobsoid_id and jobsoid_jobid exist
+      if (item.jobsoid_id && item.jobsoid_jobid) {
       // Get the jobsoid_id and jobsoid_jobid for the current item
       const jobsoidId = item.jobsoid_id;
       const jobsoidJobId = item.jobsoid_jobid;
@@ -580,6 +582,7 @@ syncButton.addEventListener('click', async () => {
       } else {
         console.error('Failed to update status for ID:', jobsoidId);
       }
+    }
     }
 
     console.log('Data synchronization completed successfully!');
