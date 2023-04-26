@@ -134,86 +134,86 @@ $("#export-btn").click(function () {
 
 });
 let testId
-const sendCheckedTests = (testId,candidateId,jobsoid_jobid, row) => {
+const sendCheckedTests = (testId, candidateId, jobsoid_jobid, row) => {
   fetch('https://int-mng.cdmx.io/api/admin/tests/send_checked', {
-      method: 'POST',
-      body: JSON.stringify({
-        sub: "CodeMax || Logic Test",
-        id: [testId] // Only send testId which are not Failed
-      }),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
+    method: 'POST',
+    body: JSON.stringify({
+      sub: "CodeMax || Logic Test",
+      id: [testId] // Only send testId which are not Failed
+    }),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
     .then(response => {
       if (!response.ok) {
         throw new Error('Network error occured.');
       }
       if (response.ok) {
         fetch('https://app.jobsoid.com/api/candidates/pipelinestage/update', {
-        method: 'PUT',
-        body: JSON.stringify({
-          Candidates: [
-            {
-              CandidateId: candidateId,
-              JobId: jobsoid_jobid,
-              PipelineStageId: 107610
+          method: 'PUT',
+          body: JSON.stringify({
+            Candidates: [
+              {
+                CandidateId: candidateId,
+                JobId: jobsoid_jobid,
+                PipelineStageId: 107610
+              }
+            ],
+            Note: {
+              NoteId: 0,
+              ReviewId: 0,
+              DocumentId: 0,
+              ContactId: 0,
+              ShowAdmin: true,
+              ShowManager: true,
+              ShowUser: true,
+              ShowExternal: true,
+              ShowPublic: true
+            },
+            ReasonId: 0,
+            ReasonText: "",
+            SendEmail: false,
+            SendSms: false,
+            SendQuestionnaire: false,
+            SendVideoScreen: false,
+            EmailTemplateId: 0,
+            SmsTemplateId: 0,
+            QuestionnaireId: 0,
+            VideoScreenId: 0,
+            CustomEmail: {
+              Subject: "",
+              Body: ""
+            },
+            CustomSms: {
+              Text: ""
+            },
+            ScheduledTime: null,
+            SendLater: false
+          }),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Network error while updating status');
             }
-          ],
-          Note: {
-            NoteId: 0,
-            ReviewId: 0,
-            DocumentId: 0,
-            ContactId: 0,
-            ShowAdmin: true,
-            ShowManager: true,
-            ShowUser: true,
-            ShowExternal: true,
-            ShowPublic: true
-          },
-          ReasonId: 0,
-          ReasonText: "",
-          SendEmail: false,
-          SendSms: false,
-          SendQuestionnaire: false,
-          SendVideoScreen: false,
-          EmailTemplateId: 0,
-          SmsTemplateId: 0,
-          QuestionnaireId: 0,
-          VideoScreenId: 0,
-          CustomEmail: {
-            Subject: "",
-            Body: ""
-          },
-          CustomSms: {
-            Text: ""
-          },
-          ScheduledTime: null,
-          SendLater: false
-        }),
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Network error while updating status');
-        }
-        row.cells[2].textContent = "Status updated";
-      })
-      .catch(error => {
-        console.error('There was a problem while updating pipeline stage:', error);
-        row.cells[2].textContent = "Status update failed";
-      });
-        fetch('https://int-mng.cdmx.io/api/admin/tests/send_checked_wa', {
-            method: 'POST',
-            body: JSON.stringify({
-              id: [testId] // Only send testId which are not Failed
-            }),
-            headers: {
-              'Content-Type': 'application/json'
-            }
+            row.cells[2].textContent = "Status updated";
           })
+          .catch(error => {
+            console.error('There was a problem while updating pipeline stage:', error);
+            row.cells[2].textContent = "Status update failed";
+          });
+        fetch('https://int-mng.cdmx.io/api/admin/tests/send_checked_wa', {
+          method: 'POST',
+          body: JSON.stringify({
+            id: [testId] // Only send testId which are not Failed
+          }),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
           .then(response => {
             if (!response.ok) {
               throw new Error('Network error while sending WhatsApp Notifications');
@@ -235,242 +235,355 @@ const sendCheckedTests = (testId,candidateId,jobsoid_jobid, row) => {
 
 const button = document.getElementById("generate-tests");
 button.addEventListener("click", () => {
-      button.disabled = true;
-      const selectProfileValue = document.getElementById("select-profile").value;
-      const selectTechQuizValue = document.getElementById("select-quiz-tech").value;
-      if (selectProfileValue == "Select a profile" || selectTechQuizValue == null) {
-        alert("Please select a quiz type, profile, and quiz tech before generating tests.");
-        return;
-      }
-      if (missingEmail == true || missingMobileNumbers == true) {
-        alert("Missing mobile numbers or email addresses, Please check");
-        return;
-      }
-      if ($('#InterviewSiteStatus').text() == 'OFFLINE') {
-        alert("You are not logged in to the interview site. Kindly login first and try again");
-        return;
-      }
-      const tableBody = document.querySelector("#table tbody");
-      const rows = tableBody.getElementsByTagName("tr");
-      // Loop through each row and send a request to generate new user
-      const generateNewUser = (postData) => {
-        return fetch('https://int-mng.cdmx.io/api/admin/tests/generate_test_jobsoid', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(postData)
-          })
-          .then(response => response.json())
-          .then(data => {
-            return data;
-          });
-      };
-      const generateUsers = () => {
-        let i = 0;
-        const generateNext = () => {
-
-          if (i < rows.length) {
-            const row = rows[i];
-            // Split the name into first and last name
-            const candidateId = row.cells[0].textContent.trim();
-            const nameParts = row.cells[1].textContent.trim().split(' ');
-            const last_name = nameParts.pop();
-            const first_name = nameParts.join(' ');
-            const jobsoid_id = row.cells[0].textContent.trim();
-            const jobsoid_jobid = row.cells[7].textContent.trim();
-            const quiz_type_id = "1";
-            const tech_quiz_type_id = selectTechQuizValue;
-            const profile_code = selectProfileValue;
-            const email = row.cells[4].textContent.trim();
-            const mobile = row.cells[5].textContent.trim().replace(/[^\d]/g, '');
-            const type = 'CANDIDATE';
-
-            const postData = {
-              jobsoid_id,
-              jobsoid_jobid,
-              quiz_type_id,
-              tech_quiz_type_id,
-              profile_code,
-              first_name,
-              last_name,
-              email,
-              mobile,
-              type
-            };
-
-            generateNewUser(postData)
-              .then(data => {
-                if (data.code) {
-                  testId = data.id;
-                  row.cells[3].textContent = data.code;
-                  row.cells[6].textContent = data.id;
-                  return sendCheckedTests(testId,candidateId,jobsoid_jobid, row);
-                } else {
-                  row.cells[2].textContent = "Failed";
-                  row.cells[2].classList.add("text-red");
-                }
-              })
-              .then(() => {
-                row.cells[2].textContent = "Sent";
-                row.cells[2].classList.remove("text-red");
-                row.cells[2].classList.add("text-green");
-                i++;
-              })
-              .catch(error => {
-                console.error(error);
-                row.cells[2].textContent = "Failed";
-                row.cells[2].classList.add("text-red");
-                i++;
-              })
-              .finally(() => {
-                generateNext();
-              });
-          }
-        }
-        generateNext();
-      }
-      generateUsers();
-
-      setTimeout(() => {
-        fetch('https://int-mng.cdmx.io/api/admin/tests/get?status=WAITING&limit=0')
-          .then(response => response.json())
-          .then(data => {
-            let total = 0;
-            let generated = 0;
-            let failed = 0;
-            Array.from(document.querySelectorAll('tbody tr')).forEach(row => {
-              const testCode = row.cells[3].textContent;
-              const test = data.query.data.find(test => test.code === testCode);
-              if (test) {
-                row.cells[2].textContent = "Generated";
-                row.cells[2].classList.remove("text-red");
-                row.cells[2].classList.add("text-green");
-                generated++;
-              } else {
-                row.cells[2].textContent = "Failed";
-                row.cells[2].classList.add("text-red");
-                failed++;
-              }
-              total++;
-            });
-            // Update the statistics
-            document.getElementById("total").textContent = total;
-            document.getElementById("generated").textContent = generated;
-            document.getElementById("failed").textContent = failed;
-          }, 10000);
-      });
+  button.disabled = true;
+  const selectProfileValue = document.getElementById("select-profile").value;
+  const selectTechQuizValue = document.getElementById("select-quiz-tech").value;
+  if (selectProfileValue == "Select a profile" || selectTechQuizValue == null) {
+    alert("Please select a quiz type, profile, and quiz tech before generating tests.");
+    return;
+  }
+  if (missingEmail == true || missingMobileNumbers == true) {
+    alert("Missing mobile numbers or email addresses, Please check");
+    return;
+  }
+  if ($('#InterviewSiteStatus').text() == 'OFFLINE') {
+    alert("You are not logged in to the interview site. Kindly login first and try again");
+    return;
+  }
+  const tableBody = document.querySelector("#table tbody");
+  const rows = tableBody.getElementsByTagName("tr");
+  // Loop through each row and send a request to generate new user
+  const generateNewUser = (postData) => {
+    return fetch('https://int-mng.cdmx.io/api/admin/tests/generate_test_jobsoid', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(postData)
     })
-    // Get the Send button element
-    const refreshButton = document.querySelector('#refresh'); refreshButton.addEventListener('click', refreshTable);
+      .then(response => response.json())
+      .then(data => {
+        return data;
+      });
+  };
+  const generateUsers = () => {
+    let i = 0;
+    const generateNext = () => {
 
-    function refreshTable() {
-      if (document.getElementById("select-profile").value == "Select a profile") {
-        alert("Select Profile first");
-        return false;
-      }
-      fetch('https://int-mng.cdmx.io/api/admin/tests/get?status=WAITING&limit=0')
-        .then(response => response.json())
-        .then(data => {
-          let total = 0;
-          let generated = 0;
-          let failed = 0;
-          Array.from(document.querySelectorAll('tbody tr')).forEach(row => {
-            const testCode = row.cells[3].textContent;
-            const test = data.query.data.find(test => test.code === testCode);
-            if (test) {
-              row.cells[2].textContent = "Generated";
-              row.cells[2].classList.remove("text-red");
-              row.cells[2].classList.add("text-green");
-              generated++;
+      if (i < rows.length) {
+        const row = rows[i];
+        // Split the name into first and last name
+        const candidateId = row.cells[0].textContent.trim();
+        const nameParts = row.cells[1].textContent.trim().split(' ');
+        const last_name = nameParts.pop();
+        const first_name = nameParts.join(' ');
+        const jobsoid_id = row.cells[0].textContent.trim();
+        const jobsoid_jobid = row.cells[7].textContent.trim();
+        const quiz_type_id = "1";
+        const tech_quiz_type_id = selectTechQuizValue;
+        const profile_code = selectProfileValue;
+        const email = row.cells[4].textContent.trim();
+        const mobile = row.cells[5].textContent.trim().replace(/[^\d]/g, '');
+        const type = 'CANDIDATE';
+
+        const postData = {
+          jobsoid_id,
+          jobsoid_jobid,
+          quiz_type_id,
+          tech_quiz_type_id,
+          profile_code,
+          first_name,
+          last_name,
+          email,
+          mobile,
+          type
+        };
+
+        generateNewUser(postData)
+          .then(data => {
+            if (data.code) {
+              testId = data.id;
+              row.cells[3].textContent = data.code;
+              row.cells[6].textContent = data.id;
+              return sendCheckedTests(testId, candidateId, jobsoid_jobid, row);
             } else {
               row.cells[2].textContent = "Failed";
               row.cells[2].classList.add("text-red");
-              failed++;
             }
-            total++;
+          })
+          .then(() => {
+            row.cells[2].textContent = "Sent";
+            row.cells[2].classList.remove("text-red");
+            row.cells[2].classList.add("text-green");
+            i++;
+          })
+          .catch(error => {
+            console.error(error);
+            row.cells[2].textContent = "Failed";
+            row.cells[2].classList.add("text-red");
+            i++;
+          })
+          .finally(() => {
+            generateNext();
           });
-          // Update the statistics
-          document.getElementById("total").textContent = total;
-          document.getElementById("generated").textContent = generated;
-          document.getElementById("failed").textContent = failed;
-          // Get the subject from the text field
-          // const subject = document.getElementById('sub').value;
-
-          // Send the POST request to send mails
-        })
-        .catch(error => {
-          alert(error);
-        });
-
+      }
     }
+    generateNext();
+  }
+  generateUsers();
 
-    $(document).ready(function () {
-      checkInterviewSiteStatus();
+  setTimeout(() => {
+    fetch('https://int-mng.cdmx.io/api/admin/tests/get?status=WAITING&limit=0')
+      .then(response => response.json())
+      .then(data => {
+        let total = 0;
+        let generated = 0;
+        let failed = 0;
+        Array.from(document.querySelectorAll('tbody tr')).forEach(row => {
+          const testCode = row.cells[3].textContent;
+          const test = data.query.data.find(test => test.code === testCode);
+          if (test) {
+            row.cells[2].textContent = "Generated";
+            row.cells[2].classList.remove("text-red");
+            row.cells[2].classList.add("text-green");
+            generated++;
+          } else {
+            row.cells[2].textContent = "Failed";
+            row.cells[2].classList.add("text-red");
+            failed++;
+          }
+          total++;
+        });
+        // Update the statistics
+        document.getElementById("total").textContent = total;
+        document.getElementById("generated").textContent = generated;
+        document.getElementById("failed").textContent = failed;
+      }, 10000);
+  });
+})
+// Get the Send button element
+const refreshButton = document.querySelector('#refresh'); refreshButton.addEventListener('click', refreshTable);
 
-      setTimeout(function () {
-        if ($('#InterviewSiteStatus').text() == 'ONLINE') {
-          fetch('https://int-mng.cdmx.io/api/admin/quiz_types/get?status=true').then(response => response.json()).then(result => {
-            var options = result.query.map(function (obj) {
-              return $("<option>", {
-                value: obj.code,
-                text: obj.name
-              });
-            });
-            $("#select-quiz-tech").append(options);
-            // add "NA" option to select-quiz-tech dropdown
-            var newOptionNA = $("<option>", {
-              value: "",
-              text: "NA",
-              selected: true
-            });
-            $("#select-quiz-tech").prepend(newOptionNA);
-
-
-          });
-
-
-          fetch('https://int-mng.cdmx.io/api/admin/profiles/get?status=true').then(response => response.json()).then(result => {
-            var options = result.query.map(function (obj) {
-              return $("<option>", {
-                value: obj.code,
-                text: obj.name
-              });
-            });
-            $("#select-profile").append(options);
-
-          });
+function refreshTable() {
+  if (document.getElementById("select-profile").value == "Select a profile") {
+    alert("Select Profile first");
+    return false;
+  }
+  fetch('https://int-mng.cdmx.io/api/admin/tests/get?status=WAITING&limit=0')
+    .then(response => response.json())
+    .then(data => {
+      let total = 0;
+      let generated = 0;
+      let failed = 0;
+      Array.from(document.querySelectorAll('tbody tr')).forEach(row => {
+        const testCode = row.cells[3].textContent;
+        const test = data.query.data.find(test => test.code === testCode);
+        if (test) {
+          row.cells[2].textContent = "Generated";
+          row.cells[2].classList.remove("text-red");
+          row.cells[2].classList.add("text-green");
+          generated++;
+        } else {
+          row.cells[2].textContent = "Failed";
+          row.cells[2].classList.add("text-red");
+          failed++;
         }
-      }, 1000);
-      // Call the function every 2 minutes using setInterval()
-      setInterval(checkInterviewSiteStatus, 2 * 60 * 1000); // 2 minutes in milliseconds
+        total++;
+      });
+      // Update the statistics
+      document.getElementById("total").textContent = total;
+      document.getElementById("generated").textContent = generated;
+      document.getElementById("failed").textContent = failed;
+      // Get the subject from the text field
+      // const subject = document.getElementById('sub').value;
+
+      // Send the POST request to send mails
+    })
+    .catch(error => {
+      alert(error);
     });
 
+}
 
-    function checkInterviewSiteStatus() {
-      fetch('https://int-mng.cdmx.io/admin', {
-          method: 'GET',
-          redirect: 'manual', // prevent the browser from following redirects
-          cache: 'no-cache' // disable caching to ensure a fresh response is received
-        })
-        .then(response => {
-          if (response.ok) {
-            // The request was successful and returned a status code of 200
-            $('#InterviewSiteStatus')
-              .removeClass('bg-warning bg-danger')
-              .addClass('bg-success')
-              .text('ONLINE');
-            return true;
-          } else {
-            // The request failed or returned a non-200 status code
-            $('#InterviewSiteStatus')
-              .removeClass('bg-warning bg-success')
-              .addClass('bg-danger')
-              .text('OFFLINE');
-            return false;
-          }
-        })
-        .catch(error => {
-          console.error(error);
+$(document).ready(function () {
+  checkInterviewSiteStatus();
+
+  setTimeout(function () {
+    if ($('#InterviewSiteStatus').text() == 'ONLINE') {
+      fetch('https://int-mng.cdmx.io/api/admin/quiz_types/get?status=true').then(response => response.json()).then(result => {
+        var options = result.query.map(function (obj) {
+          return $("<option>", {
+            value: obj.code,
+            text: obj.name
+          });
         });
+        $("#select-quiz-tech").append(options);
+        // add "NA" option to select-quiz-tech dropdown
+        var newOptionNA = $("<option>", {
+          value: "",
+          text: "NA",
+          selected: true
+        });
+        $("#select-quiz-tech").prepend(newOptionNA);
+
+
+      });
+
+
+      fetch('https://int-mng.cdmx.io/api/admin/profiles/get?status=true').then(response => response.json()).then(result => {
+        var options = result.query.map(function (obj) {
+          return $("<option>", {
+            value: obj.code,
+            text: obj.name
+          });
+        });
+        $("#select-profile").append(options);
+
+      });
     }
+  }, 1000);
+  // Call the function every 2 minutes using setInterval()
+  setInterval(checkInterviewSiteStatus, 2 * 60 * 1000); // 2 minutes in milliseconds
+});
+
+
+function checkInterviewSiteStatus() {
+  fetch('https://int-mng.cdmx.io/admin', {
+    method: 'GET',
+    redirect: 'manual', // prevent the browser from following redirects
+    cache: 'no-cache' // disable caching to ensure a fresh response is received
+  })
+    .then(response => {
+      if (response.ok) {
+        // The request was successful and returned a status code of 200
+        $('#InterviewSiteStatus')
+          .removeClass('bg-warning bg-danger')
+          .addClass('bg-success')
+          .text('ONLINE');
+        return true;
+      } else {
+        // The request failed or returned a non-200 status code
+        $('#InterviewSiteStatus')
+          .removeClass('bg-warning bg-success')
+          .addClass('bg-danger')
+          .text('OFFLINE');
+        return false;
+      }
+    })
+    .catch(error => {
+      console.error(error);
+    });
+}
+const syncButton = document.getElementById('sync-data');
+
+syncButton.addEventListener('click', async () => {
+  try {
+    // Call the first API to retrieve the initial response
+    const response = await fetch('https://int-mng.cdmx.io/api/admin/tests/get_jobsoid_details');
+    const data = await response.json();
+
+    // Process each item in the response
+    for (const item of data.query) {
+      // Get the jobsoid_id and jobsoid_jobid for the current item
+      const jobsoidId = item.jobsoid_id;
+      const jobsoidJobId = item.jobsoid_jobid;
+
+      // Call the second API to retrieve the candidate data
+      const candidateResponse = await fetch(`https://app.jobsoid.com/api/candidates/${jobsoidId}/edit`);
+      const candidateData = await candidateResponse.json();
+
+      // Update the value of "Value" with the score where "AttributeTypeId" is 4840
+      if (
+        candidateData.CategorizedAttributes &&
+        candidateData.CategorizedAttributes['0']
+      ) {
+        const attributes = candidateData.CategorizedAttributes['0'];
+        for (let i = 0; i < attributes.length; i++) {
+          if (attributes[i].AttributeTypeId === 4840) {
+            attributes[i].Value = item.score;
+            break;
+          }
+        }
+      }
+
+      // Send the updated response to the third API using PUT method
+      const updateScore = await fetch('https://app.jobsoid.com/api/candidates', {
+        method: 'PUT',
+        body: JSON.stringify(candidateData),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (updateScore.ok) {
+        const putData = await updateScore.json();
+        console.log('Score successfully Updated for ID:', jobsoidId);
+
+        // Determine the PipelineStageId based on the score and passing_score
+        let pipelineStageId;
+        if (item.score < item.passing_score) {
+          //For Reject
+          pipelineStageId = 71337;
+        } else {
+          //For HR Round
+          pipelineStageId = 98536;
+        }
+
+        // Make the additional API call to update the pipeline stage
+        await fetch('https://app.jobsoid.com/api/candidates/pipelinestage/update', {
+          method: 'PUT',
+          body: JSON.stringify({
+            Candidates: [
+              {
+                CandidateId: jobsoidId,
+                JobId: jobsoidJobId,
+                PipelineStageId: pipelineStageId
+              }
+            ],
+            Note: {
+              NoteId: 0,
+              ReviewId: 0,
+              DocumentId: 0,
+              ContactId: 0,
+              ShowAdmin: true,
+              ShowManager: true,
+              ShowUser: true,
+              ShowExternal: true,
+              ShowPublic: true
+            },
+            ReasonId: 0,
+            ReasonText: "",
+            SendEmail: false,
+            SendSms: false,
+            SendQuestionnaire: false,
+            SendVideoScreen: false,
+            EmailTemplateId: 0,
+            SmsTemplateId: 0,
+            QuestionnaireId: 0,
+            VideoScreenId: 0,
+            CustomEmail: {
+              Subject: "",
+              Body: ""
+            },
+            CustomSms: {
+              Text: ""
+            },
+            ScheduledTime: null,
+            SendLater: false
+          }),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        console.log('Status Successfully Updated for ID:', jobsoidId);
+      } else {
+        console.error('Failed to update status for ID:', jobsoidId);
+      }
+    }
+
+    console.log('Data synchronization completed successfully!');
+  } catch (error) {
+    console.error('Error occurred during data synchronization:', error);
+  }
+});
