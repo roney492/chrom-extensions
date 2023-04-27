@@ -175,6 +175,30 @@ function selectCandidatesWithScoreBelow100() {
     }
   }
 }
+
+// Function to check if the user is logged in
+async function checkInterviewSiteStatus() {
+  try {
+    const response = await fetch('https://int-mng.cdmx.io/admin', {
+      method: 'GET',
+      redirect: 'manual',
+      cache: 'no-cache'
+    });
+
+    if (response.ok) {
+      // The request was successful and returned a status code of 200
+      return true;
+    } else {
+      // The request failed or returned a non-200 status code
+      return false;
+    }
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+}
+
+
 const syncButton = document.getElementById('sync-data');
 const syncOldDataButton = document.getElementById('sync-old-data');
 
@@ -186,7 +210,7 @@ let totalCount = 0;
 let rejectedCount = 0;
 let hrRoundCount = 0;
 function updateCountDisplay() {
-  countElement.textContent = `${processedCount}/${totalCount}`;
+  countElement.textContent = `(${processedCount}/${totalCount})`;
 }
 syncButton.addEventListener('click', async () => {
   const isLoggedIn = await checkInterviewSiteStatus();
@@ -327,31 +351,18 @@ syncButton.addEventListener('click', async () => {
   }
 });
 
-// Function to check if the user is logged in
-async function checkInterviewSiteStatus() {
-  try {
-    const response = await fetch('https://int-mng.cdmx.io/admin', {
-      method: 'GET',
-      redirect: 'manual',
-      cache: 'no-cache'
-    });
-
-    if (response.ok) {
-      // The request was successful and returned a status code of 200
-      return true;
-    } else {
-      // The request failed or returned a non-200 status code
-      return false;
-    }
-  } catch (error) {
-    console.error(error);
-    return false;
-  }
-}
 
 syncOldDataButton.addEventListener('click', async () => {
+  const isLoggedIn = await checkInterviewSiteStatus();
+
+  if (!isLoggedIn) {
+    // User is not logged in or offline
+    alert('You are not logged into Interview System. Please log in and try again.');
+    return;
+  }
   try {
     // Show the spinner
+    updateCountDisplay()
     spinner.style.display = 'block';
 
     // Call the API to retrieve the pending jobsoid_ids

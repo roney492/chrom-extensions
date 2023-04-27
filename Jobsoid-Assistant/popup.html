@@ -20,13 +20,21 @@
 
 .spinner i {
   color: #fff;
+  margin-left: 5px;
 }
 .btn {
   display: flex;
   justify-content: space-between;
   position: relative;
 }
+.btn-group {
+  margin-bottom: 10px;
+}
 
+.count {
+    font-size: 14px;
+    margin-left: 10px;
+}
 
 </style>
   <div class="container">
@@ -39,21 +47,23 @@
       <button id="select-good" type="button" class="btn btn-success btn-sm my-1">Select Good</button>
       <button id="select-bad" type="button" class="btn btn-danger btn-sm my-1">Select Bad</button>
     </div>
-    <div>
-        <button id="sync-data" class="btn btn-primary btn-sm">
-          <span class="btn-text">Sync Data  </span>
+    <div style="margin-bottom: 10px;">
+      <button id="sync-data" class="btn btn-primary btn-sm">
+          <span class="btn-text">Sync Data</span>
           <span id="spinner" class="spinner">
-            <i class="fas fa-spinner fa-spin"></i>
+              <i class="fas fa-spinner fa-spin"></i>
           </span>
           <span id="count" class="count"></span>
-        </button>
-    </div>
-    <div>
-        <button id="sync-old-data" class="btn btn-warning btn-sm" disabled>Sync Old Data</button>
-    </div>
-    <div>
+      </button>
+  </div>
+  
+  <div class="btn-group">
+      <button id="sync-old-data" class="btn btn-warning btn-sm">Sync Old Data</button>
+  </div>
+  
+  <div class="btn-group">
       <button id="sync-completed-data" class="btn btn-primary btn-sm" disabled>Sync Completed Data</button>
-    </div>
+  </div>
     <br/>
     <p id="open-rnd" style="font-size: 10px;">[RND]</p>
     <br />
