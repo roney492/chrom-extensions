@@ -25,7 +25,6 @@ document.addEventListener("DOMContentLoaded", function () {
         alert("You need to be on the Candidates or Jobs -> Candidates page.");
       }
     });
-
   })
 
   const scoreButton = document.getElementById('show-score');
@@ -180,8 +179,23 @@ const syncButton = document.getElementById('sync-data');
 const syncOldDataButton = document.getElementById('sync-old-data');
 
 const spinner = document.getElementById('spinner');
-
+const countElement = document.getElementById('count');
+let processedCount = 0;
+let totalCount = 0;
+// Initialize counters
+let rejectedCount = 0;
+let hrRoundCount = 0;
+function updateCountDisplay() {
+  countElement.textContent = `${processedCount}/${totalCount}`;
+}
 syncButton.addEventListener('click', async () => {
+  const isLoggedIn = await checkInterviewSiteStatus();
+
+  if (!isLoggedIn) {
+    // User is not logged in or offline
+    alert('You are not logged into Interview System. Please log in and try again.');
+    return;
+  }
   try {
     // Show the spinner
     spinner.style.display = 'block';
@@ -189,9 +203,9 @@ syncButton.addEventListener('click', async () => {
     // Call the first API to retrieve the initial response
     const response = await fetch('https://int-mng.cdmx.io/api/admin/tests/get_jobsoid_details');
     const data = await response.json();
-
     // Process each item in the response
     for (const item of data.query) {
+      totalCount = item.count;
       // Check if jobsoid_id and jobsoid_jobid exist
       if (item.jobsoid_id && item.jobsoid_jobid) {
       // Get the jobsoid_id and jobsoid_jobid for the current item
@@ -234,9 +248,11 @@ syncButton.addEventListener('click', async () => {
         if (item.score < item.passing_score) {
           //For Reject
           pipelineStageId = 71337;
+          rejectedCount++;
         } else {
           //For HR Round
           pipelineStageId = 98536;
+          hrRoundCount++;
         }
 
         // Make the additional API call to update the pipeline stage
@@ -288,6 +304,8 @@ syncButton.addEventListener('click', async () => {
 
         console.log('Status Successfully Updated for ID:', jobsoidId);
         await fetch(`https://int-mng.cdmx.io/api/admin/tests/update_jobsoid_status?jobsoid_id=${jobsoidId}`);
+        processedCount++;
+        updateCountDisplay()
       } else {
         console.error('Failed to update status for ID:', jobsoidId);
       }
@@ -295,13 +313,12 @@ syncButton.addEventListener('click', async () => {
     }
 
     console.log('Data synchronization completed successfully!');
-    alert('Data synchronization completed successfully!');
+    spinner.style.display = 'none';
+    alert('Data synchronization completed successfully!, Processed Count:'+processedCount+', Rejected Count:'+rejectedCount+', HR Round Count:'+hrRoundCount);
   } catch (error) {
     console.error('Error occurred during data synchronization:', error);
     alert('Error occurred during data synchronization:', error);
   } finally {
-    // Hide the spinner
-    spinner.style.display = 'none';
   }
 });
 
@@ -326,65 +343,6 @@ async function checkInterviewSiteStatus() {
     return false;
   }
 }
-
-syncButton.addEventListener('click', async () => {
-  const isLoggedIn = await checkInterviewSiteStatus();
-
-  if (!isLoggedIn) {
-    // User is not logged in or offline
-    alert('You are not logged into Interview System. Please log in and try again.');
-    return;
-  }
-  try {
-    // Show the spinner
-    spinner.style.display = 'block';
-
-    // Call the API to retrieve the initial response
-    const response = await fetch('https://int-mng.cx-rad.in/api/admin/tests/get_jobsoid_details');
-    const data = await response.json();
-
-    // Process each item in the response
-    for (const item of data.query) {
-      if (item.jobsoid_id && item.jobsoid_jobid) {
-        // Get the jobsoid_id and jobsoid_jobid for the current item
-        const jobsoidId = item.jobsoid_id;
-        const jobsoidJobId = item.jobsoid_jobid;
-        const totalCount = data.count;
-        let processedCount = 0;
-
-        // Call the API to retrieve the candidate details
-        await new Promise(resolve => setTimeout(resolve, 500)); // Add a 500ms delay
-        const candidateResponse = await fetch(`https://app.jobsoid.com/api/candidates/${jobsoidId}/detail`);
-        const candidateData = await candidateResponse.json();
-
-        // Find jobId with Status "Logic Test"
-        const jobId = candidateData.Jobs.find(job => job.Status === "Logic Test")?.Id;
-
-        if (jobId) {
-          console.log(jobId)
-          // Call the API to update jobsoid_jobid
-          await fetch(`https://int-mng.cdmx.io/api/admin/tests/update_jobsoid_jobid?jobsoid_id=${jobsoidId}`, {
-            method: 'POST',
-            body: JSON.stringify({ jobsoid_jobid: jobId }),
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          });
-          console.log(`Updated jobsoid_jobid for jobsoid_id ${jobsoidId}`);
-          processedCount++;
-          syncButton.textContent = `${processedCount}/${totalCount}`;
-        }
-      }
-    }
-
-    console.log('Sync Data completed successfully!');
-  } catch (error) {
-    console.error('Error occurred during Sync Data:', error);
-  } finally {
-    // Hide the spinner
-    spinner.style.display = 'none';
-  }
-});
 
 syncOldDataButton.addEventListener('click', async () => {
   try {
@@ -433,4 +391,49 @@ syncOldDataButton.addEventListener('click', async () => {
       spinner.style.display = 'none';
     }
 });
+const syncCompletedDataButton = document.getElementById('sync-completed-data');
+syncCompletedDataButton.addEventListener('click', async () => {
+  try {
+    // Show the spinner
+    spinner.style.display = 'block';
 
+    // Call the API to retrieve the pending jobsoid_ids
+    const response = await fetch('https://int-mng.cdmx.io/api/admin/tests/get_jobsoid_completed');
+    const data = await response.json();
+
+    // Process each jobsoid_id
+    for (const item of data.query) {
+      if (item.jobsoid_id) {
+        const jobsoidId = item.jobsoid_id;
+
+        // Call the API to retrieve the candidate details
+        await new Promise(resolve => setTimeout(resolve, 500)); // Add a 500ms delay
+        const candidateResponse = await fetch(`https://app.jobsoid.com/api/candidates/${jobsoidId}/detail`);
+        const candidateData = await candidateResponse.text();
+        const result = JSON.parse(candidateData);
+
+        const jobId = result.Jobs.find(job => job.Status !== "Logic Test" && job.Status !== "New")?.Id;
+        if (jobId) {
+          // Call the API to update jobsoid_jobid
+          const updateResponse = await fetch(`https://int-mng.cdmx.io/api/admin/tests/update_jobsoid_status?jobsoid_id=${jobsoidId}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (updateResponse.ok) {
+            console.log(`Updated jobsoid_jobid for jobsoid_id ${jobsoidId}`);
+          } else {
+            console.error(`Failed to update jobsoid_jobid for jobsoid_id ${jobsoidId}`);
+          }
+        }
+      }
+
+      console.log('Sync Completed Data completed successfully!');
+    }
+    } finally {
+      // Hide the spinner
+      spinner.style.display = 'none';
+    }
+});
