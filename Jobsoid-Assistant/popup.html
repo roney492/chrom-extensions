@@ -12,7 +12,13 @@
 
   <title>Jobsoid Assistant</title>
 </head>
+<style>
+  .spinner {
+  display: none;
+  /* Add CSS styles for the spinner */
+}
 
+</style>
   <div class="container">
     <header class="d-flex flex-wrap justify-content-center py-2 mb-1 border-bottom">
       <h6>Jobsoid Assistant</h6>
@@ -25,6 +31,7 @@
     </div>
     <div class="d-grid gap-2">
       <button id="sync-data" class="btn btn-primary btn-sm">Sync Data</button>
+      <div id="spinner" class="spinner"></div>
     </div>
     <br />
     <p id="open-rnd" style="font-size: 10px;">[RND]</p>
