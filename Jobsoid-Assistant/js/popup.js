@@ -419,10 +419,11 @@ allPendingSyncCountButton.addEventListener('click', async () => {
     const data = await response.json();
     let pendingCount = data.counts;
     let message = '';
-      pendingCount.forEach(item => {
-        message += `<strong>${item.profile_code}: </strong>${item.count}<br>`;
-      });
-      alert(message);
+    pendingCount.forEach(item => {
+      message += `${item.profile_code}: ${item.count}\n`;
+});
+
+alert(message);
   }
   finally {
           // Hide the spinner
