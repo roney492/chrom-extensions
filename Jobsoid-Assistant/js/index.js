@@ -62,27 +62,23 @@ data.map((element, index) => {
 
             if (!jobId){
               missingJobID = true;
+              row.cells[7].textContent = "Status not New/CV Review/Logic Test!!";
               row.cells[7].style.color = "red";
-              row.cells[7].textContent = "Status not New!!";
             } else {
               row.cells[7].style.color = "initial";
             }
 
             if (!mobile) {
               missingMobileNumbers = true;
-              row.cells[5].style.color = "red";
               row.cells[5].textContent = "Missing Mobile number!!";
-            } else if (!/^(\+\d{1,3}[- ]?)?\d{10}$/.test(mobile)) {
-              missingMobileNumbers = true;
               row.cells[5].style.color = "red";
-              row.cells[5].textContent = "Invalid Mobile number!!";
             } else {
               row.cells[5].style.color = "initial";
             }
             if (!email) {
               missingEmail = true;
-              row.cells[4].style.color = "red";
               row.cells[4].textContent = "Missing Email!!";
+              row.cells[4].style.color = "red";
             } else {
               row.cells[4].style.color = "initial";
             }
@@ -101,7 +97,7 @@ Promise.all(promises).then(() => {
     $("#generate-tests").html('Missing mobile or email addresses!!').prop('disabled', true);
   } 
   else if (missingJobID == true){
-    $("#generate-tests").html('Status not in New!!').prop('disabled', true);
+    $("#generate-tests").html('Status not New/CV Review/Logic Test!!').prop('disabled', true);
   }
   else {
     $("#generate-tests").html('Generate and Send tests').prop('disabled', false);
@@ -139,11 +135,7 @@ $("#export-btn").click(function () {
       missingMobileNumbers = true;
       row.cells[5].style.color = "red";
       row.cells[5].textContent = "Missing Mobile number!!";
-    } else if (!/^(\+\d{1,3}[- ]?)?\d{10}$/.test(mobile)) {
-      missingMobileNumbers = true;
-      row.cells[5].style.color = "red";
-      row.cells[5].textContent = "Invalid Mobile number!!";
-    } else {
+    }  else {
       row.cells[5].style.color = "initial";
     }
     if (!email) {
