@@ -407,6 +407,24 @@ syncOldDataButton.addEventListener('click', async () => {
       spinner.style.display = 'none';
     }
 });
+const allPendingSyncCountButton = document.getElementById('sync-pending-count');
+const countPendingElement = document.getElementById('count_all');
+allPendingSyncCountButton.addEventListener('click', async () => {
+  try {
+    // Show the spinner
+    spinner.style.display = 'block';
+
+    // Call the API to retrieve the pending jobsoid_ids
+    const response = await fetch('https://int-mng.cdmx.io/api/admin/tests/get_jobsoid_details_all');
+    const data = await response.json();
+    let pendingCount = data.counts[0].count;
+    countPendingElement.textContent = `: ${pendingCount}`
+  }
+  finally {
+          // Hide the spinner
+          spinner.style.display = 'none';
+        }
+});
 // const syncCompletedDataButton = document.getElementById('sync-completed-data');
 // syncCompletedDataButton.addEventListener('click', async () => {
 //   try {
