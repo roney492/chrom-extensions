@@ -417,8 +417,12 @@ allPendingSyncCountButton.addEventListener('click', async () => {
     // Call the API to retrieve the pending jobsoid_ids
     const response = await fetch('https://int-mng.cdmx.io/api/admin/tests/get_jobsoid_details_all');
     const data = await response.json();
-    let pendingCount = data.counts[0].count;
-    countPendingElement.textContent = `: ${pendingCount}`
+    let pendingCount = data.counts;
+    let message = '';
+      pendingCount.forEach(item => {
+        message += `<strong>${item.profile_code}: </strong>${item.count}<br>`;
+      });
+      alert(message);
   }
   finally {
           // Hide the spinner
