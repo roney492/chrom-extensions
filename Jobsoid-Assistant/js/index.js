@@ -20,6 +20,7 @@ data.forEach(function (element) {
 let promises = [];
 let missingMobileNumbers = false;
 let missingEmail = false;
+let missingJobID = false;
 // Loop through the data array and create a promise for each element
 data.map((element, index) => {
   let promise = new Promise((resolve) => {
@@ -57,11 +58,24 @@ data.map((element, index) => {
             const row = rows[i];
             const mobile = row.cells[5].textContent.trim();
             const email = row.cells[4].textContent.trim();
+            const jobId = row.cells[7].textContent.trim();
+
+            if (!jobId){
+              missingJobID = true;
+              row.cells[7].style.color = "red";
+              row.cells[7].textContent = "Status not New!!";
+            } else {
+              row.cells[7].style.color = "initial";
+            }
 
             if (!mobile) {
               missingMobileNumbers = true;
               row.cells[5].style.color = "red";
               row.cells[5].textContent = "Missing Mobile number!!";
+            } else if (!/^(\+\d{1,3}[- ]?)?\d{10}$/.test(mobile)) {
+              missingMobileNumbers = true;
+              row.cells[5].style.color = "red";
+              row.cells[5].textContent = "Invalid Mobile number!!";
             } else {
               row.cells[5].style.color = "initial";
             }
@@ -85,7 +99,11 @@ data.map((element, index) => {
 Promise.all(promises).then(() => {
   if (missingEmail == true || missingMobileNumbers == true) {
     $("#generate-tests").html('Missing mobile or email addresses!!').prop('disabled', true);
-  } else {
+  } 
+  else if (missingJobID == true){
+    $("#generate-tests").html('Status not in New!!').prop('disabled', true);
+  }
+  else {
     $("#generate-tests").html('Generate and Send tests').prop('disabled', false);
     $("#export-btn").prop('disabled', false);
   }
@@ -101,6 +119,15 @@ $("#export-btn").click(function () {
     var mobile = $(this).find("td:eq(5)").text();
     tableData += name + "\n" + email + "\n" + mobile + "\n\n";
   });
+    // Mobile number validation rules
+    $.validator.addMethod(
+      "mobileNumber",
+      function (value, element) {
+        return this.optional(element) || /^\d{10}$/.test(value);
+      },
+      "Please enter a valid 10-digit mobile number."
+    );
+
   const tableBody = document.querySelector("#table tbody");
   const rows = tableBody.getElementsByTagName("tr");
   for (let i = 0; i < rows.length; i++) {
@@ -112,6 +139,10 @@ $("#export-btn").click(function () {
       missingMobileNumbers = true;
       row.cells[5].style.color = "red";
       row.cells[5].textContent = "Missing Mobile number!!";
+    } else if (!/^(\+\d{1,3}[- ]?)?\d{10}$/.test(mobile)) {
+      missingMobileNumbers = true;
+      row.cells[5].style.color = "red";
+      row.cells[5].textContent = "Invalid Mobile number!!";
     } else {
       row.cells[5].style.color = "initial";
     }
@@ -312,7 +343,7 @@ button.addEventListener("click", () => {
             }
           })
           .then(() => {
-            row.cells[2].textContent = "Sent";
+            row.cells[2].textContent = "Processing";
             row.cells[2].classList.remove("text-red");
             row.cells[2].classList.add("text-green");
             i++;

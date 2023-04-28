@@ -303,7 +303,7 @@ syncButton.addEventListener('click', async () => {
             },
             ReasonId: 0,
             ReasonText: "",
-            SendEmail: false,
+            SendEmail: pipelineStageId === 71337 ? true : false,
             SendSms: false,
             SendQuestionnaire: false,
             SendVideoScreen: false,
