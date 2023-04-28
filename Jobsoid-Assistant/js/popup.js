@@ -407,49 +407,49 @@ syncOldDataButton.addEventListener('click', async () => {
       spinner.style.display = 'none';
     }
 });
-const syncCompletedDataButton = document.getElementById('sync-completed-data');
-syncCompletedDataButton.addEventListener('click', async () => {
-  try {
-    // Show the spinner
-    spinner.style.display = 'block';
+// const syncCompletedDataButton = document.getElementById('sync-completed-data');
+// syncCompletedDataButton.addEventListener('click', async () => {
+//   try {
+//     // Show the spinner
+//     spinner.style.display = 'block';
 
-    // Call the API to retrieve the pending jobsoid_ids
-    const response = await fetch('https://int-mng.cdmx.io/api/admin/tests/get_jobsoid_completed');
-    const data = await response.json();
+//     // Call the API to retrieve the pending jobsoid_ids
+//     const response = await fetch('https://int-mng.cdmx.io/api/admin/tests/get_jobsoid_completed');
+//     const data = await response.json();
 
-    // Process each jobsoid_id
-    for (const item of data.query) {
-      if (item.jobsoid_id) {
-        const jobsoidId = item.jobsoid_id;
+//     // Process each jobsoid_id
+//     for (const item of data.query) {
+//       if (item.jobsoid_id) {
+//         const jobsoidId = item.jobsoid_id;
 
-        // Call the API to retrieve the candidate details
-        await new Promise(resolve => setTimeout(resolve, 500)); // Add a 500ms delay
-        const candidateResponse = await fetch(`https://app.jobsoid.com/api/candidates/${jobsoidId}/detail`);
-        const candidateData = await candidateResponse.text();
-        const result = JSON.parse(candidateData);
+//         // Call the API to retrieve the candidate details
+//         await new Promise(resolve => setTimeout(resolve, 500)); // Add a 500ms delay
+//         const candidateResponse = await fetch(`https://app.jobsoid.com/api/candidates/${jobsoidId}/detail`);
+//         const candidateData = await candidateResponse.text();
+//         const result = JSON.parse(candidateData);
 
-        const jobId = result.Jobs.find(job => job.Status !== "Logic Test" && job.Status !== "New")?.Id;
-        if (jobId) {
-          // Call the API to update jobsoid_jobid
-          const updateResponse = await fetch(`https://int-mng.cdmx.io/api/admin/tests/update_jobsoid_status?jobsoid_id=${jobsoidId}`, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          });
+//         const jobId = result.Jobs.find(job => job.Status !== "Logic Test" && job.Status !== "New")?.Id;
+//         if (jobId) {
+//           // Call the API to update jobsoid_jobid
+//           const updateResponse = await fetch(`https://int-mng.cdmx.io/api/admin/tests/update_jobsoid_status?jobsoid_id=${jobsoidId}`, {
+//             method: 'GET',
+//             headers: {
+//               'Content-Type': 'application/json'
+//             }
+//           });
 
-          if (updateResponse.ok) {
-            console.log(`Updated jobsoid_jobid for jobsoid_id ${jobsoidId}`);
-          } else {
-            console.error(`Failed to update jobsoid_jobid for jobsoid_id ${jobsoidId}`);
-          }
-        }
-      }
+//           if (updateResponse.ok) {
+//             console.log(`Updated jobsoid_jobid for jobsoid_id ${jobsoidId}`);
+//           } else {
+//             console.error(`Failed to update jobsoid_jobid for jobsoid_id ${jobsoidId}`);
+//           }
+//         }
+//       }
 
-      console.log('Sync Completed Data completed successfully!');
-    }
-    } finally {
-      // Hide the spinner
-      spinner.style.display = 'none';
-    }
-});
+//       console.log('Sync Completed Data completed successfully!');
+//     }
+//     } finally {
+//       // Hide the spinner
+//       spinner.style.display = 'none';
+//     }
+// });
