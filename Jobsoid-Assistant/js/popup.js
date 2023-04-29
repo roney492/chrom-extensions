@@ -420,7 +420,7 @@ allPendingSyncCountButton.addEventListener('click', async () => {
     let pendingCount = data.counts;
     let message = '';
     pendingCount.forEach(item => {
-      message += `${item.profile_code}: ${item.count}\n`;
+      message += `${item.name}: ${item.count} (${item.hr_name})\n`;
 });
 
 alert(message);
