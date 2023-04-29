@@ -343,7 +343,7 @@ syncButton.addEventListener('click', async () => {
 
     console.log('Data synchronization completed successfully!');
     spinner.style.display = 'none';
-    alert('Data synchronization completed successfully!, Processed Count:'+processedCount+', Rejected Count:'+rejectedCount+', HR Round Count:'+hrRoundCount);
+    alert('Data synchronization completed successfully!\nProcessed Count:'+processedCount+'\nRejected Count:'+rejectedCount+'\nHR Round Count:'+hrRoundCount);
   } catch (error) {
     console.error('Error occurred during data synchronization:', error);
     alert('Error occurred during data synchronization:', error);
