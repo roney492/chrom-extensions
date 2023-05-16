@@ -34,7 +34,7 @@ data.map((element, index) => {
           const last_name = nameParts.pop();
           const first_name = nameParts.join(' ');
           const phone = result.Phone.replace(/[^\d+]/g, '');
-          const jobId = result.Jobs.find(job => job.Status === "New" || job.Status === "Logic Test" || job.Status === "CV Review" || job.Status === "Pending for Tech Test")?.Id || "";
+          const jobId = result.Jobs.find(job => job.Status === "New" || job.Status === "Logic Test" || job.Status === "CV Review" || job.Status === "Pending for Tech Test" || job.Status === "Reject")?.Id || "";
 
           $("#" + element + " td:eq(1)").text(first_name + ' ' + last_name);
           $("#" + element + " td:eq(2)").text("Ready");

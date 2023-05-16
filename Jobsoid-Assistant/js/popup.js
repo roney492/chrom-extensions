@@ -247,17 +247,17 @@ syncButton.addEventListener('click', async () => {
           //Update Logic Test score
           if (item.quiz_type_id == 1 && attributes[i].AttributeTypeId === 4840) {
             attributes[i].Value = item.score;
-            break;
+            console.log("logic tests score")
           }
           //Consider non-logic tests as technical and update the technical test score
-          if (item.quiz_type_id != 1 && attributes[i].AttributeTypeId === 7568350) {
+          if (item.quiz_type_id != 1 && attributes[i].AttributeTypeId === 5290) {
+            console.log("non-logic test as technical score")
             attributes[i].Value = item.assessment_score;
-            break;
           }
           //"FieldName": "Tech Test (MCQ)
-          if (item.assessment_applicable && item.assessment_score && attributes[i].AttributeTypeId === 7568350) {
+          if (item.assessment_applicable == "true" && attributes[i].AttributeTypeId === 5290) {
+            console.log("Updating technical test score")
             attributes[i].Value = item.assessment_score;
-            break;
           }
         }
       }
@@ -277,13 +277,19 @@ syncButton.addEventListener('click', async () => {
 
         // Determine the PipelineStageId based on the score and passing_score
         let pipelineStageId;
-        if (assessment_applicable) {
+        if (item.assessment_applicable == "true") {
+          console.log("assessment_applicable true")
           if (item.assessment_score) {
-          if (item.score < item.passing_score && item.assessment_score < item.assessment_passing_score) {
+            console.log("assessment_score present")
+            console.log("score"+ item.score)
+            console.log("assment sescore"+ item.assessment_score)
+          if ((item.score < item.passing_score) && (item.assessment_score < item.assessment_passing_score)) {
+            console.log("assessment_applicable rejected")
             //For Reject
             pipelineStageId = 71337;
             rejectedCount++;
-          } else {
+          } else if(item.score >= item.passing_score && item.assessment_score >= item.assessment_passing_score) {
+            console.log("assessment_applicable HR round")
             //For HR Round
             pipelineStageId = 98536;
             hrRoundCount++;
@@ -297,7 +303,7 @@ syncButton.addEventListener('click', async () => {
           //For Reject
           pipelineStageId = 71337;
           rejectedCount++;
-        } else {
+        } else if(item.score >= item.passing_score) {
           //For HR Round
           pipelineStageId = 98536;
           hrRoundCount++;
