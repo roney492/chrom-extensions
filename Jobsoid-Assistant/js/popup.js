@@ -241,14 +241,22 @@ syncButton.addEventListener('click', async () => {
       const candidateData = await candidateResponse.json();
 
       // Update the value of "Value" with the score where "AttributeTypeId" is 4840
-      if (
-        candidateData.CategorizedAttributes &&
-        candidateData.CategorizedAttributes['0']
-      ) {
+      if (candidateData.CategorizedAttributes && candidateData.CategorizedAttributes['0']) {
         const attributes = candidateData.CategorizedAttributes['0'];
         for (let i = 0; i < attributes.length; i++) {
-          if (attributes[i].AttributeTypeId === 4840) {
+          //Update Logic Test score
+          if (item.quiz_type_id == 1 && attributes[i].AttributeTypeId === 4840) {
             attributes[i].Value = item.score;
+            break;
+          }
+          //Consider non-logic tests as technical and update the technical test score
+          if (item.quiz_type_id != 1 && attributes[i].AttributeTypeId === 7568350) {
+            attributes[i].Value = item.assessment_score;
+            break;
+          }
+          //"FieldName": "Tech Test (MCQ)
+          if (item.assessment_applicable && item.assessment_score && attributes[i].AttributeTypeId === 7568350) {
+            attributes[i].Value = item.assessment_score;
             break;
           }
         }
@@ -269,7 +277,23 @@ syncButton.addEventListener('click', async () => {
 
         // Determine the PipelineStageId based on the score and passing_score
         let pipelineStageId;
-        if (item.score < item.passing_score) {
+        if (assessment_applicable) {
+          if (item.assessment_score) {
+          if (item.score < item.passing_score && item.assessment_score < item.assessment_passing_score) {
+            //For Reject
+            pipelineStageId = 71337;
+            rejectedCount++;
+          } else {
+            //For HR Round
+            pipelineStageId = 98536;
+            hrRoundCount++;
+          }
+        } else {
+          //For Pending Technical Test
+          pipelineStageId = 309460;
+          hrRoundCount++;
+        }
+      } else if (item.score < item.passing_score) {
           //For Reject
           pipelineStageId = 71337;
           rejectedCount++;
