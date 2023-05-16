@@ -260,6 +260,7 @@ const button = document.getElementById("generate-tests");
 button.addEventListener("click", () => {
   button.disabled = true;
   const selectProfileValue = document.getElementById("select-profile").value;
+  const selectQuizValue = document.getElementById("select-quiz").value;
   const selectTechQuizValue = document.getElementById("select-quiz-tech").value;
   if (selectProfileValue == "Select a profile" || selectTechQuizValue == null) {
     alert("Please select a quiz type, profile, and quiz tech before generating tests.");
@@ -302,7 +303,7 @@ button.addEventListener("click", () => {
         const first_name = nameParts.join(' ');
         const jobsoid_id = row.cells[0].textContent.trim();
         const jobsoid_jobid = row.cells[7].textContent.trim();
-        const quiz_type_id = "1";
+        const quiz_type_id = selectQuizValue;
         const tech_quiz_type_id = selectTechQuizValue;
         const profile_code = selectProfileValue;
         const email = row.cells[4].textContent.trim();
@@ -440,6 +441,21 @@ $(document).ready(function () {
             text: obj.name
           });
         });
+        $("#select-quiz").append(options);
+        // add "Logic" option to select-quiz-tech dropdown
+        var newOptionLogic = $("<option>", {
+          value: 1,
+          text: "Logic",
+          selected: true
+        });
+        // Create the "TQ-PM" option for the select-quiz-tech dropdown
+        var newOptionTQPM = $("<option>", {
+          value: 30,
+          text: "TQ-PHP"
+        });
+        $("#select-quiz").prepend(newOptionTQPM);
+        $("#select-quiz").prepend(newOptionLogic);
+
         $("#select-quiz-tech").append(options);
         // add "NA" option to select-quiz-tech dropdown
         var newOptionNA = $("<option>", {
