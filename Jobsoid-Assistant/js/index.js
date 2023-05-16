@@ -437,11 +437,10 @@ $(document).ready(function () {
       fetch('https://int-mng.cdmx.io/api/admin/quiz_types/get?status=true').then(response => response.json()).then(result => {
         var options = result.query.map(function (obj) {
           return $("<option>", {
-            value: obj.code,
+            value: obj.id,
             text: obj.name
           });
         });
-        $("#select-quiz").append(options);
         // add "Logic" option to select-quiz-tech dropdown
         var newOptionLogic = $("<option>", {
           value: 1,
