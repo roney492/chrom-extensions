@@ -34,7 +34,7 @@ data.map((element, index) => {
           const last_name = nameParts.pop();
           const first_name = nameParts.join(' ');
           const phone = result.Phone.replace(/[^\d+]/g, '');
-          const jobId = result.Jobs.find(job => job.Status === "New" || job.Status === "Logic Test" || job.Status === "CV Review")?.Id || "";
+          const jobId = result.Jobs.find(job => job.Status === "New" || job.Status === "Logic Test" || job.Status === "CV Review" || job.Status === "Pending for Tech Test")?.Id || "";
 
           $("#" + element + " td:eq(1)").text(first_name + ' ' + last_name);
           $("#" + element + " td:eq(2)").text("Ready");
@@ -62,7 +62,7 @@ data.map((element, index) => {
 
             if (!jobId){
               missingJobID = true;
-              row.cells[7].textContent = "Status not New/CV Review/Logic Test!!";
+              row.cells[7].textContent = "Status not New/CV Review/Logic Test/Pending Tech Test!!";
               row.cells[7].style.color = "red";
             } else {
               row.cells[7].style.color = "initial";
