@@ -209,6 +209,7 @@ let totalCount = 0;
 // Initialize counters
 let rejectedCount = 0;
 let hrRoundCount = 0;
+let pendingTechCount = 0;
 function updateCountDisplay() {
   countElement.textContent = `(${processedCount}/${totalCount})`;
 }
@@ -297,7 +298,7 @@ syncButton.addEventListener('click', async () => {
         } else {
           //For Pending Technical Test
           pipelineStageId = 309460;
-          hrRoundCount++;
+          pendingTechCount++;
         }
       } else if (item.score < item.passing_score) {
           //For Reject
@@ -372,7 +373,7 @@ syncButton.addEventListener('click', async () => {
 
     console.log('Data synchronization completed successfully!');
     spinner.style.display = 'none';
-    alert('Data synchronization completed successfully!\nProcessed Count:'+processedCount+'\nRejected Count:'+rejectedCount+'\nHR Round Count:'+hrRoundCount);
+    alert('Data synchronization completed successfully!\nProcessed Count:'+processedCount+'\nRejected Count:'+rejectedCount+'\nHR Round Count:'+hrRoundCount+'\nPending Tech Count:'+pendingTechCount);
   } catch (error) {
     console.error('Error occurred during data synchronization:', error);
     alert('Error occurred during data synchronization:', error);
