@@ -291,8 +291,8 @@ syncButton.addEventListener('click', async () => {
             rejectedCount++;
           } else if(item.score >= item.passing_score && item.assessment_score >= item.assessment_passing_score) {
             console.log("assessment_applicable HR round")
-            //For HR Round
-            pipelineStageId = 98536;
+            //86502 for "No Response", 98536 for HR Round
+            pipelineStageId = 86502; 
             hrRoundCount++;
           }
         } else {
@@ -305,8 +305,8 @@ syncButton.addEventListener('click', async () => {
           pipelineStageId = 71337;
           rejectedCount++;
         } else if(item.score >= item.passing_score) {
-          //For HR Round
-          pipelineStageId = 98536;
+          //86502 for "No Response", 98536 for HR Round
+          pipelineStageId = 86502;
           hrRoundCount++;
         }
 
