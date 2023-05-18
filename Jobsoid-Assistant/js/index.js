@@ -34,7 +34,7 @@ data.map((element, index) => {
           const last_name = nameParts.pop();
           const first_name = nameParts.join(' ');
           const phone = result.Phone.replace(/[^\d+]/g, '');
-          const jobId = result.Jobs.find(job => job.Status === "New" || job.Status === "Logic Test" || job.Status === "CV Review" || job.Status === "Pending for Tech Test" || job.Status === "Reject")?.Id || "";
+          const jobId = result.Jobs.find(job => job.Status === "New" || job.Status === "Logic Test" || job.Status === "CV Review" || job.Status === "Pending for Tech Test" || job.Status === "Hire")?.Id || "";
 
           $("#" + element + " td:eq(1)").text(first_name + ' ' + last_name);
           $("#" + element + " td:eq(2)").text("Ready");
@@ -157,6 +157,8 @@ $("#export-btn").click(function () {
 
 });
 let testId
+const checkbox = document.getElementById('pendingTechnical');
+const pipelineStageId = checkbox.checked ? 107615 : 107610;
 const sendCheckedTests = (testId, candidateId, jobsoid_jobid, row) => {
   fetch('https://int-mng.cdmx.io/api/admin/tests/send_checked', {
     method: 'POST',
@@ -180,7 +182,7 @@ const sendCheckedTests = (testId, candidateId, jobsoid_jobid, row) => {
               {
                 CandidateId: candidateId,
                 JobId: jobsoid_jobid,
-                PipelineStageId: 107610
+                PipelineStageId: pipelineStageId //PipelineStageId 107610 for Logic Test, PipelineStageId 107615 for Technical Test
               }
             ],
             Note: {
