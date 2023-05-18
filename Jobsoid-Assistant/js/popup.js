@@ -283,8 +283,12 @@ syncButton.addEventListener('click', async () => {
           if (item.assessment_score) {
             console.log("assessment_score present")
             console.log("score"+ item.score)
-            console.log("assment sescore"+ item.assessment_score)
-          if ((item.score < item.passing_score) && (item.assessment_score < item.assessment_passing_score)) {
+            console.log("passing_score"+ item.passing_score)
+            console.log("assessment score"+ item.assessment_score)
+            console.log("assessment passing_score"+ item.assessment_passing_score)
+            console.log("logic check"+ (item.score < item.passing_score))
+            console.log("assessment check"+ (item.assessment_score < item.assessment_passing_score))
+          if (item.score < item.passing_score || item.assessment_score < item.assessment_passing_score) {
             console.log("assessment_applicable rejected")
             //For Reject
             pipelineStageId = 71337;
@@ -309,6 +313,8 @@ syncButton.addEventListener('click', async () => {
           pipelineStageId = 86502;
           hrRoundCount++;
         }
+
+        if (pipelineStageId) {
 
         // Make the additional API call to update the pipeline stage
         await fetch('https://app.jobsoid.com/api/candidates/pipelinestage/update', {
@@ -368,6 +374,11 @@ syncButton.addEventListener('click', async () => {
       } else {
         console.error('Failed to update status for ID:', jobsoidId);
       }
+    } else {
+      console.error('Pipeline ID Missing:');
+      return
+    }
+
     }
     }
 
