@@ -252,8 +252,8 @@ syncButton.addEventListener('click', async () => {
           }
           //Consider non-logic tests as technical and update the technical test score
           if (item.quiz_type_id != 1 && attributes[i].AttributeTypeId === 5290) {
-            console.log("non-logic test as technical score")
-            attributes[i].Value = item.assessment_score;
+            console.log("non-logic test as technical score"+ item.score)
+            attributes[i].Value = item.score;
           }
           //"FieldName": "Tech Test (MCQ)
           if (item.assessment_applicable == "true" && attributes[i].AttributeTypeId === 5290) {

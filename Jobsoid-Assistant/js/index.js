@@ -158,8 +158,10 @@ $("#export-btn").click(function () {
 });
 let testId
 const checkbox = document.getElementById('pendingTechnical');
-const pipelineStageId = checkbox.checked ? 107615 : 107610;
 const sendCheckedTests = (testId, candidateId, jobsoid_jobid, row) => {
+  console.log(checkbox);
+  console.log(checkbox.checked);
+  const pipelineStageId = checkbox.checked ? 107615 : 107610;
   fetch('https://int-mng.cdmx.io/api/admin/tests/send_checked', {
     method: 'POST',
     body: JSON.stringify({
