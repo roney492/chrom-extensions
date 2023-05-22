@@ -296,7 +296,7 @@ syncButton.addEventListener('click', async () => {
           } else if(item.score >= item.passing_score && item.assessment_score >= item.assessment_passing_score) {
             console.log("assessment_applicable HR round")
             //86502 for "No Response", 98536 for HR Round
-            pipelineStageId = 86502; 
+            pipelineStageId = 98536; 
             hrRoundCount++;
           }
         } else {
