@@ -452,10 +452,15 @@ $(document).ready(function () {
           selected: true
         });
         // Create the "TQ-PM" option for the select-quiz-tech dropdown
-        var newOptionTQPM = $("<option>", {
+        var newOptionTQPHP = $("<option>", {
           value: 30,
           text: "TQ-PHP"
         });
+        var newOptionTQPM = $("<option>", {
+          value: 31,
+          text: "TQ-PM"
+        });
+        $("#select-quiz").prepend(newOptionTQPHP);
         $("#select-quiz").prepend(newOptionTQPM);
         $("#select-quiz").prepend(newOptionLogic);
 
