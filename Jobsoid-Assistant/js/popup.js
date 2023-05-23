@@ -310,7 +310,7 @@ syncButton.addEventListener('click', async () => {
           rejectedCount++;
         } else if(item.score >= item.passing_score) {
           //86502 for "No Response", 98536 for HR Round
-          pipelineStageId = 86502;
+          pipelineStageId = 98536;
           hrRoundCount++;
         }
 
