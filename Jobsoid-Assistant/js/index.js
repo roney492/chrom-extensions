@@ -159,14 +159,12 @@ $("#export-btn").click(function () {
 let testId
 const checkbox = document.getElementById('pendingTechnical');
 const sendCheckedTests = (testId, candidateId, jobsoid_jobid, row) => {
-  console.log(checkbox);
-  console.log(checkbox.checked);
   const pipelineStageId = checkbox.checked ? 107615 : 107610;
-  fetch('https://int-mng.cdmx.io/api/admin/tests/send_checked', {
+  fetch('https://int-mng.cx-rad.in/api/admin/tests/send_jobsoid', {
     method: 'POST',
     body: JSON.stringify({
       sub: "CodeMax || Logic Test",
-      id: [testId] // Only send testId which are not Failed
+      id: testId // Only send testId which are not Failed
     }),
     headers: {
       'Content-Type': 'application/json'
@@ -232,7 +230,7 @@ const sendCheckedTests = (testId, candidateId, jobsoid_jobid, row) => {
             console.error('There was a problem while updating pipeline stage:', error);
             row.cells[2].textContent = "Status update failed";
           });
-        fetch('https://int-mng.cdmx.io/api/admin/tests/send_checked_wa', {
+        fetch('https://int-mng.cx-rad.in/api/admin/tests/send_checked_wa', {
           method: 'POST',
           body: JSON.stringify({
             id: [testId] // Only send testId which are not Failed
@@ -282,7 +280,7 @@ button.addEventListener("click", () => {
   const rows = tableBody.getElementsByTagName("tr");
   // Loop through each row and send a request to generate new user
   const generateNewUser = (postData) => {
-    return fetch('https://int-mng.cdmx.io/api/admin/tests/generate_test_jobsoid', {
+    return fetch('https://int-mng.cx-rad.in/api/admin/tests/generate_test_jobsoid', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -361,7 +359,7 @@ button.addEventListener("click", () => {
   generateUsers();
 
   setTimeout(() => {
-    fetch('https://int-mng.cdmx.io/api/admin/tests/get?status=WAITING&limit=0')
+    fetch('https://int-mng.cx-rad.in/api/admin/tests/get?status=WAITING&limit=0')
       .then(response => response.json())
       .then(data => {
         let total = 0;
@@ -397,7 +395,7 @@ function refreshTable() {
     alert("Select Profile first");
     return false;
   }
-  fetch('https://int-mng.cdmx.io/api/admin/tests/get?status=WAITING&limit=0')
+  fetch('https://int-mng.cx-rad.in/api/admin/tests/get?status=WAITING&limit=0')
     .then(response => response.json())
     .then(data => {
       let total = 0;
@@ -438,7 +436,7 @@ $(document).ready(function () {
 
   setTimeout(function () {
     if ($('#InterviewSiteStatus').text() == 'ONLINE') {
-      fetch('https://int-mng.cdmx.io/api/admin/quiz_types/get?status=true').then(response => response.json()).then(result => {
+      fetch('https://int-mng.cx-rad.in/api/admin/quiz_types/get?status=true').then(response => response.json()).then(result => {
         var options = result.query.map(function (obj) {
           return $("<option>", {
             value: obj.id,
@@ -477,7 +475,7 @@ $(document).ready(function () {
       });
 
 
-      fetch('https://int-mng.cdmx.io/api/admin/profiles/get?status=true').then(response => response.json()).then(result => {
+      fetch('https://int-mng.cx-rad.in/api/admin/profiles/get?status=true').then(response => response.json()).then(result => {
         var options = result.query.map(function (obj) {
           return $("<option>", {
             value: obj.code,
@@ -495,7 +493,7 @@ $(document).ready(function () {
 
 
 function checkInterviewSiteStatus() {
-  fetch('https://int-mng.cdmx.io/admin', {
+  fetch('https://int-mng.cx-rad.in/admin', {
     method: 'GET',
     redirect: 'manual', // prevent the browser from following redirects
     cache: 'no-cache' // disable caching to ensure a fresh response is received
