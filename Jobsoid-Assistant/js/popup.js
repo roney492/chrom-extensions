@@ -322,27 +322,24 @@ syncButton.addEventListener('click', async () => {
           body: JSON.stringify({
             Candidates: [
               {
-                CandidateId: jobsoidId,
+                CandidateId: '"' + jobsoidId + '"',
                 JobId: jobsoidJobId,
                 PipelineStageId: pipelineStageId
               }
             ],
             Note: {
-              NoteId: 0,
-              ReviewId: 0,
-              DocumentId: 0,
-              ContactId: 0,
               ShowAdmin: true,
+              ShowExternal: true,
               ShowManager: true,
               ShowUser: true,
-              ShowExternal: true,
-              ShowPublic: true
+              Text: ""
             },
             ReasonId: 0,
             ReasonText: "",
             SendEmail: pipelineStageId === 71337 ? true : false,
-            SendSms: false,
+            SendLater: false,
             SendQuestionnaire: false,
+            SendSms: false,
             SendVideoScreen: false,
             EmailTemplateId: 0,
             SmsTemplateId: 0,
