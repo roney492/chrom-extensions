@@ -322,8 +322,8 @@ syncButton.addEventListener('click', async () => {
           body: JSON.stringify({
             Candidates: [
               {
-                CandidateId: '"' + jobsoidId + '"',
-                JobId: jobsoidJobId,
+                CandidateId: jobsoidId,
+                JobId: parseInt(jobsoidJobId),
                 PipelineStageId: pipelineStageId
               }
             ],

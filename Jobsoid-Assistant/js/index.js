@@ -180,8 +180,8 @@ const sendCheckedTests = (testId, candidateId, jobsoid_jobid, row) => {
           body: JSON.stringify({
             Candidates: [
               {
-                CandidateId: '"' + candidateId + '"',
-                JobId: jobsoid_jobid,
+                CandidateId: candidateId,
+                JobId: parseInt(jobsoid_jobid),
                 PipelineStageId: pipelineStageId //PipelineStageId 107610 for Logic Test, PipelineStageId 107615 for Technical Test
               }
             ],
