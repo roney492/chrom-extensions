@@ -1,7 +1,7 @@
 {
   "name": "Jobsoid Assistant",
   "description": "Jobsoid Assistant extension to make life easier.",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "manifest_version": 3,
   "icons": {
     "16": "icon.png",

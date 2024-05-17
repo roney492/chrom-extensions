@@ -439,25 +439,11 @@ $(document).ready(function () {
             text: obj.name
           });
         });
-        // add "Logic" option to select-quiz-tech dropdown
-        var newOptionLogic = $("<option>", {
-          value: 1,
-          text: "Logic",
-          selected: true
+        // Clone the options for the second select
+        var optionsClone = options.map(function(option) {
+          return option.clone();
         });
-        // Create the "TQ-PM" option for the select-quiz-tech dropdown
-        var newOptionTQPHP = $("<option>", {
-          value: 30,
-          text: "TQ-PHP"
-        });
-        var newOptionTQPM = $("<option>", {
-          value: 31,
-          text: "TQ-PM"
-        });
-        $("#select-quiz").prepend(newOptionTQPHP);
-        $("#select-quiz").prepend(newOptionTQPM);
-        $("#select-quiz").prepend(newOptionLogic);
-
+        $("#select-quiz").append(optionsClone);
         $("#select-quiz-tech").append(options);
         // add "NA" option to select-quiz-tech dropdown
         var newOptionNA = $("<option>", {
