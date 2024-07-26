@@ -328,11 +328,11 @@ syncButton.addEventListener('click', async () => {
               }
             ],
             Note: {
+              Text: "",
               ShowAdmin: true,
-              ShowExternal: true,
               ShowManager: true,
               ShowUser: true,
-              Text: ""
+              ShowExternal: true
             },
             ReasonId: 0,
             ReasonText: "",
@@ -360,8 +360,10 @@ syncButton.addEventListener('click', async () => {
             SendLater: false
           }),
           headers: {
-            'Content-Type': 'application/json'
-          }
+            'Content-Type': 'application/json',
+            'Origin': 'https://app.jobsoid.com',
+            'Referer': 'https://app.jobsoid.com/App/'
+        }
         });
 
         console.log('Status Successfully Updated for ID:', jobsoidId);

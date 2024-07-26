@@ -168,7 +168,8 @@ const sendCheckedTests = (testId, candidateId, jobsoid_jobid, row) => {
     }),
     headers: {
       'Content-Type': 'application/json'
-    }
+    },
+    redirect: 'follow' // Ensure redirects are followed
   })
     .then(response => {
       if (!response.ok) {
@@ -186,11 +187,11 @@ const sendCheckedTests = (testId, candidateId, jobsoid_jobid, row) => {
               }
             ],
             Note: {
+              Text: "",
               ShowAdmin: true,
-              ShowExternal: true,
               ShowManager: true,
               ShowUser: true,
-              Text: ""
+              ShowExternal: true
             },
             ReasonId: 0,
             ReasonText: "",
@@ -213,8 +214,10 @@ const sendCheckedTests = (testId, candidateId, jobsoid_jobid, row) => {
             SendLater: false
           }),
           headers: {
-            'Content-Type': 'application/json'
-          }
+            'Content-Type': 'application/json',
+            'Origin': 'https://app.jobsoid.com',
+            'Referer': 'https://app.jobsoid.com/App/'
+        }
         })
           .then(response => {
             if (!response.ok) {
@@ -275,19 +278,19 @@ button.addEventListener("click", () => {
   const tableBody = document.querySelector("#table tbody");
   const rows = tableBody.getElementsByTagName("tr");
   // Loop through each row and send a request to generate new user
-  const generateNewUser = (postData) => {
-    return fetch('https://int-mng.cdmx.io/api/admin/tests/generate_test_jobsoid', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(postData)
-    })
+const generateNewUser = (postData) => {
+  return fetch('https://int-mng.cdmx.io/api/admin/tests/generate_test_jobsoid', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(postData)
+  })
       .then(response => response.json())
-      .then(data => {
-        return data;
-      });
-  };
+    .then(data => {
+      return data;
+    });
+};
   const generateUsers = () => {
     let i = 0;
     const generateNext = () => {

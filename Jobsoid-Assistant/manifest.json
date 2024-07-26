@@ -1,7 +1,7 @@
 {
   "name": "Jobsoid Assistant",
   "description": "Jobsoid Assistant extension to make life easier.",
-  "version": "1.5.2",
+  "version": "1.5.3",
   "manifest_version": 3,
   "icons": {
     "16": "icon.png",
@@ -19,8 +19,8 @@
   ],
   "host_permissions": [
     "https://app.jobsoid.com/*",
-    "http://localhost:8100/*",
-    "https://int-mng.cx-rad.in/*",
+    "https://int-mng.cdmx.io/*",
+    "https://int-mng.cdmx.io/*",
     "https://int-mng.cdmx.io/*"
   ],
   "action": {
