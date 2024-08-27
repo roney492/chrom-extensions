@@ -327,24 +327,6 @@ syncButton.addEventListener('click', async () => {
                 PipelineStageId: pipelineStageId
               }
             ],
-            Note: {
-              Text: "",
-              ShowAdmin: true,
-              ShowManager: true,
-              ShowUser: true,
-              ShowExternal: true
-            },
-            ReasonId: 0,
-            ReasonText: "",
-            SendEmail: pipelineStageId === 71337 ? true : false,
-            SendLater: false,
-            SendQuestionnaire: false,
-            SendSms: false,
-            SendVideoScreen: false,
-            EmailTemplateId: 0,
-            SmsTemplateId: 0,
-            QuestionnaireId: 0,
-            VideoScreenId: 0,
             CustomEmail: {
               Subject: pipelineStageId === 71337 ? "CodeMax || Job Application" : "",
               Body: pipelineStageId === 71337 ? `<div><p>Dear&nbsp;&nbsp;{{FirstName}},</p>\n<p><br></p>\n<p>Thank you so much for your application to {{CompanyName}}.</p>\n<p>Unfortunately, we are not able to pass you on to the next round at this time, as your logic test score did not match our criteria.&nbsp;</p>\n<p>You have our best wishes for success in locating the career opportunity you deserve. We will retain your resume in our files to review for future openings for up to six months. In the event of an appropriate available position, we will not hesitate to contact you.</p>\n<p>We wish you the best of luck in your job search.&nbsp;</p>\n<p><br></p>\n<p><strong>Regards,</strong><br></p>\n<p><strong>Team Human Resources</strong></p>\n<p><strong>
@@ -356,11 +338,28 @@ syncButton.addEventListener('click', async () => {
             CustomSms: {
               Text: ""
             },
+            EmailTemplateId: 0,
+            Note: {
+              ShowAdmin: true,
+              ShowExternal: true,
+              ShowManager: true,
+              ShowUser: true,
+              Text: ""
+            },
+            QuestionnaireId: 0,
+            ReasonId: 0,
+            ReasonText: "",
             ScheduledTime: null,
-            SendLater: false
+            SendEmail: pipelineStageId === 71337 ? true : false,
+            SendLater: false,
+            SendQuestionnaire: false,
+            SendSms: false,
+            SendVideoScreen: false,
+            SmsTemplateId: 0,
+            VideoScreenId: 0
           }),
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json;charset=UTF-8',
             'Origin': 'https://app.jobsoid.com',
             'Referer': 'https://app.jobsoid.com/App/'
         }
@@ -391,62 +390,6 @@ syncButton.addEventListener('click', async () => {
   }
 });
 
-
-// syncOldDataButton.addEventListener('click', async () => {
-//   const isLoggedIn = await checkInterviewSiteStatus();
-
-//   if (!isLoggedIn) {
-//     // User is not logged in or offline
-//     alert('You are not logged into Interview System. Please log in and try again.');
-//     return;
-//   }
-//   try {
-//     // Show the spinner
-//     updateCountDisplay()
-//     spinner.style.display = 'block';
-
-//     // Call the API to retrieve the pending jobsoid_ids
-//     const response = await fetch('https://int-mng.cdmx.io/api/admin/tests/get_jobsoid_pending');
-//     const data = await response.json();
-
-//     // Process each jobsoid_id
-//     for (const item of data.query) {
-//       if (item.jobsoid_id) {
-//         const jobsoidId = item.jobsoid_id;
-
-//         // Call the API to retrieve the candidate details
-//         await new Promise(resolve => setTimeout(resolve, 500)); // Add a 500ms delay
-//         const candidateResponse = await fetch(`https://app.jobsoid.com/api/candidates/${jobsoidId}/detail`);
-//         const candidateData = await candidateResponse.text();
-//         const result = JSON.parse(candidateData);
-
-//         // Find jobId with Status "New" or "LogicTest"
-//         const jobId = result.Jobs.find(job => job.Status === "Logic Test")?.Id;
-//         if (jobId) {
-//           // Call the API to update jobsoid_jobid
-//           const updateResponse = await fetch(`https://int-mng.cdmx.io/api/admin/tests/update_jobsoid_jobid?jobsoid_id=${jobsoidId}`, {
-//             method: 'POST',
-//             body: JSON.stringify({ jobsoid_jobid: jobId }),
-//             headers: {
-//               'Content-Type': 'application/json'
-//             }
-//           });
-
-//           if (updateResponse.ok) {
-//             console.log(`Updated jobsoid_jobid for jobsoid_id ${jobsoidId}`);
-//           } else {
-//             console.error(`Failed to update jobsoid_jobid for jobsoid_id ${jobsoidId}`);
-//           }
-//         }
-//       }
-
-//       console.log('Sync Old Data completed successfully!');
-//     } 
-//     } finally {
-//       // Hide the spinner
-//       spinner.style.display = 'none';
-//     }
-// });
 const allPendingSyncCountButton = document.getElementById('sync-pending-count');
 const countPendingElement = document.getElementById('count_all');
 allPendingSyncCountButton.addEventListener('click', async () => {
@@ -477,49 +420,3 @@ alert(message);
           spinner.style.display = 'none';
         }
 });
-// const syncCompletedDataButton = document.getElementById('sync-completed-data');
-// syncCompletedDataButton.addEventListener('click', async () => {
-//   try {
-//     // Show the spinner
-//     spinner.style.display = 'block';
-
-//     // Call the API to retrieve the pending jobsoid_ids
-//     const response = await fetch('https://int-mng.cdmx.io/api/admin/tests/get_jobsoid_completed');
-//     const data = await response.json();
-
-//     // Process each jobsoid_id
-//     for (const item of data.query) {
-//       if (item.jobsoid_id) {
-//         const jobsoidId = item.jobsoid_id;
-
-//         // Call the API to retrieve the candidate details
-//         await new Promise(resolve => setTimeout(resolve, 500)); // Add a 500ms delay
-//         const candidateResponse = await fetch(`https://app.jobsoid.com/api/candidates/${jobsoidId}/detail`);
-//         const candidateData = await candidateResponse.text();
-//         const result = JSON.parse(candidateData);
-
-//         const jobId = result.Jobs.find(job => job.Status !== "Logic Test" && job.Status !== "New")?.Id;
-//         if (jobId) {
-//           // Call the API to update jobsoid_jobid
-//           const updateResponse = await fetch(`https://int-mng.cdmx.io/api/admin/tests/update_jobsoid_status?jobsoid_id=${jobsoidId}`, {
-//             method: 'GET',
-//             headers: {
-//               'Content-Type': 'application/json'
-//             }
-//           });
-
-//           if (updateResponse.ok) {
-//             console.log(`Updated jobsoid_jobid for jobsoid_id ${jobsoidId}`);
-//           } else {
-//             console.error(`Failed to update jobsoid_jobid for jobsoid_id ${jobsoidId}`);
-//           }
-//         }
-//       }
-
-//       console.log('Sync Completed Data completed successfully!');
-//     }
-//     } finally {
-//       // Hide the spinner
-//       spinner.style.display = 'none';
-//     }
-// });
