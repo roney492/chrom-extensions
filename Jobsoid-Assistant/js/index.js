@@ -461,7 +461,7 @@ $(document).ready(function () {
 
 
       fetch('https://int-mng.cdmx.io/api/admin/profiles/get?status=true').then(response => response.json()).then(result => {
-        var options = result.query.map(function (obj) {
+        var options = result.query.data.map(function (obj) {
           return $("<option>", {
             value: obj.code,
             text: obj.name

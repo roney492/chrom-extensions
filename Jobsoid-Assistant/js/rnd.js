@@ -16,7 +16,7 @@
       fetch('https://int-mng.cdmx.io/api/admin/profiles/get?status=true').then(r => r.text()).then(result => {
         // Result now contains the response text, do what you want...
         result = JSON.parse(result);
-        result.query.forEach(function(obj) {
+        result.query.data.forEach(function(obj) {
           console.log(obj.name);
         });
       });
