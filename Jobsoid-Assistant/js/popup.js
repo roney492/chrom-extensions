@@ -327,6 +327,23 @@ syncButton.addEventListener('click', async () => {
                 PipelineStageId: pipelineStageId
               }
             ],
+            Note: {
+              Text: "",
+              ShowAdmin: true,
+              ShowManager: true,
+              ShowUser: true,
+              ShowExternal: true
+            },
+            ReasonId: 0,
+            ReasonText: "",
+            SendEmail: pipelineStageId === 71337 ? true : false,
+            SendSms: false,
+            SendQuestionnaire: false,
+            SendVideoScreen: false,
+            EmailTemplateId: 0,
+            SmsTemplateId: 0,
+            QuestionnaireId: 0,
+            VideoScreenId: 0,
             CustomEmail: {
               Subject: pipelineStageId === 71337 ? "CodeMax || Job Application" : "",
               Body: pipelineStageId === 71337 ? `<div><p>Dear&nbsp;&nbsp;{{FirstName}},</p>\n<p><br></p>\n<p>Thank you so much for your application to {{CompanyName}}.</p>\n<p>Unfortunately, we are not able to pass you on to the next round at this time, as your logic test score did not match our criteria.&nbsp;</p>\n<p>You have our best wishes for success in locating the career opportunity you deserve. We will retain your resume in our files to review for future openings for up to six months. In the event of an appropriate available position, we will not hesitate to contact you.</p>\n<p>We wish you the best of luck in your job search.&nbsp;</p>\n<p><br></p>\n<p><strong>Regards,</strong><br></p>\n<p><strong>Team Human Resources</strong></p>\n<p><strong>
@@ -338,27 +355,13 @@ syncButton.addEventListener('click', async () => {
             CustomSms: {
               Text: ""
             },
-            EmailTemplateId: 0,
-            Note: {
-              ShowAdmin: true,
-              ShowExternal: true,
-              ShowManager: true,
-              ShowUser: true,
-              Text: ""
-            },
-            QuestionnaireId: 0,
-            ReasonId: 0,
-            ReasonText: "",
             ScheduledTime: null,
-            SendEmail: pipelineStageId === 71337 ? true : false,
             SendLater: false,
-            SendQuestionnaire: false,
-            SendSms: false,
-            SendVideoScreen: false,
-            SmsTemplateId: 0,
-            VideoScreenId: 0
           }),
           headers: {
+            'Accept': 'application/json, text/plain, */*',
+            'Accept-Encoding': 'gzip, deflate, br, zstd',
+            'Accept-Language': 'en-IN,en-GB;q=0.9,en-US;q=0.8,en;q=0.7',
             'Content-Type': 'application/json;charset=UTF-8',
             'Origin': 'https://app.jobsoid.com',
             'Referer': 'https://app.jobsoid.com/App/'

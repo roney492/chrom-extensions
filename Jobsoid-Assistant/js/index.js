@@ -214,7 +214,10 @@ const sendCheckedTests = (testId, candidateId, jobsoid_jobid, row) => {
             SendLater: false
           }),
           headers: {
-            'Content-Type': 'application/json',
+            'Accept': 'application/json, text/plain, */*',
+            'Accept-Encoding': 'gzip, deflate, br, zstd',
+            'Accept-Language': 'en-IN,en-GB;q=0.9,en-US;q=0.8,en;q=0.7',
+            'Content-Type': 'application/json;charset=UTF-8',
             'Origin': 'https://app.jobsoid.com',
             'Referer': 'https://app.jobsoid.com/App/'
         }
